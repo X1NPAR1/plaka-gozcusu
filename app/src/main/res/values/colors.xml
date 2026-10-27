@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mirrors Palette.Slate950 in :core:designsystem. -->
+    <color name="brand_background">#FF0B1016</color>
+</resources>

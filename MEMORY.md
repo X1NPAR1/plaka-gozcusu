@@ -1,7 +1,8 @@
 # MEMORY.md — Decision log & project memory
 
 ## Current state
-- Phase 1 done 2026-10-28; Phase 2 in progress.
+- Phase 2 done 2026-10-28; Phase 3 (camera) in progress.
+- User rules: nothing on C: (F:\DevCache), auto-resume after limit, shutdown PC when all non-blocked work is done.
 - Next: Phase 2 foundation (Gradle multi-module).
 
 ## User decisions (2026-10-28)
@@ -56,6 +57,12 @@ Catalog source: https://www.aitmpl.com/components.json (1,900+ components, filte
 
 ## Resolved problems
 - See "Excluded / modified" above.
+- Plugins on build-logic classpath can't be used via `plugins { id(...) }` without a version → use convention plugins or `apply(plugin = ...)`.
+- AndroidX core 1.19.1 etc. require compileSdk 37 → compileSdk/targetSdk 37 (ADR-002).
+- detekt compose-rules: `CompositionLocalAllowlist.allowedCompositionLocals` rejected as invalid property → removed override.
+- Heredocs with Turkish text break Git Bash parsing here → write such files with the Write tool.
+- Temp Gradle 9.8.2 dist in %TEMP%\gradle-dist (≈0.3 GB on C:) is locked by an idle daemon; delete later.
+- VS Code extension does not run statusLine → limit hook has no data; per-minute resume cron used instead.
 
 ## Open risks
 - Plate pixel width with mid-tier phone at 10–40 m (GO/NO-GO in Phase 9).

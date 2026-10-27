@@ -5,7 +5,10 @@
       "args": [
         "-y",
         "@upstash/context7-mcp@latest"
-      ]
+      ],
+      "env": {
+        "npm_config_cache": "F:/DevCache/npm-cache"
+      }
     },
     "android-mcp": {
       "command": "C:/Users/krmkr/AppData/Roaming/Python/Python312/Scripts/uvx.exe",
@@ -13,7 +16,11 @@
         "--python",
         "3.13",
         "android-mcp"
-      ]
+      ],
+      "env": {
+        "UV_CACHE_DIR": "F:/DevCache/uv-cache",
+        "UV_PYTHON_INSTALL_DIR": "F:/DevCache/uv-python"
+      }
     }
   }
 }

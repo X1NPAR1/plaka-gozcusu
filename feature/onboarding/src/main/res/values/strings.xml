@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_step_counter">Adım %1$d / %2$d</string>
+    <string name="onboarding_next">Devam</string>
+    <string name="onboarding_back">Geri</string>
+    <string name="onboarding_finish">Kurulumu tamamla</string>
+
+    <string name="onboarding_purpose_title">Evinizin önündeki yolu izleyin</string>
+    <string name="onboarding_purpose_body">Plaka Gözcüsü, sabitlediğiniz telefonun kamerasıyla önünüzden geçen araçları algılar, plakalarını okumaya çalışır ve her geçiş için fotoğraf kaydeder. Bir olay olduğunda saat aralığını seçip ilgili tüm araçları saniyeler içinde bulabilirsiniz.</string>
+
+    <string name="onboarding_privacy_title">Her şey bu telefonda kalır</string>
+    <string name="onboarding_privacy_body">Görüntüler ve kayıtlar yalnızca bu cihazda işlenir ve saklanır. İnternete gönderilmez, bulut kullanılmaz, kimlik veya araç sahibi sorgulaması yapılmaz. Kamerayı öncelikle kendi mülkünüzün önüne ve bitişik yola yöneltin; komşuların özel alanlarını kaydetmeyin.</string>
+
+    <string name="onboarding_accuracy_title">Okumalar otomatiktir, yanılabilir</string>
+    <string name="onboarding_accuracy_body">Uygulama emin olmadığı plakaları \"İnceleme gerekli\" veya \"Okunamadı\" olarak işaretler ve asla eksik karakter uydurmaz. Önemli bir kaydı fotoğrafına bakarak kendiniz doğrulayabilir veya düzeltebilirsiniz; orijinal okuma her zaman saklanır.</string>
+
+    <string name="onboarding_mounting_title">Telefonu güvenle sabitleyin</string>
+    <string name="onboarding_mounting_body">Telefonu düşmeyecek şekilde sağlam bir tutucuya takın, şarja bağlı tutun ve doğrudan güneş almayan bir yere yerleştirin. Sonraki adımlarda kamera izni verip yakınlaştırma ve izlenecek alanı ayarlayacaksınız.</string>
+</resources>

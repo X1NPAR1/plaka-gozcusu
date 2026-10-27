@@ -7,7 +7,9 @@
 - **Consequences:** Models must be `.tflite` or convertible; ONNX-only candidates need conversion (verified per model) or are rejected. ML Kit (separate bundled runtime) allowed only as OCR baseline/fallback — revisit if it becomes primary.
 
 ## ADR-002 Toolchain versions
-- **Decision:** Gradle 9.8.2, AGP 9.4.1, Kotlin 2.4.21, KSP 2.3.12, compileSdk/targetSdk 36 (installed, stable), minSdk 29.
+- **Decision:** Gradle 9.8.2, AGP 9.4.1, Kotlin 2.4.21, KSP 2.3.12, compileSdk 37 / targetSdk 37, minSdk 29.
+- **Update (Phase 2, measured):** core-ktx 1.19.1 and other current AndroidX libs refuse compileSdk 36 (build error) → compileSdk 37 (android-37.0 installed). Lint `OldTargetApi` flagged targetSdk 36 → targetSdk 37; runtime behaviour changes of API 37 must be checked on device (Phase 9).
+- Built-in Kotlin (AGP 9 default) is used; KGP 2.4.21 pinned through the build-logic classpath. kapt not used (KSP only).
 - **Rationale for minSdk 29:** mid/low-tier target phone; API 29 gives `PowerManager` thermal status listener, scoped storage model, modern CameraX support. Older devices are out of scope (documented).
 - **Source:** maven-metadata.xml on dl.google.com / repo1.maven.org, services.gradle.org (2026-10-28).
 - **Risk:** Detekt 1.23.8 vs Kotlin 2.4 — verify in Phase 2.

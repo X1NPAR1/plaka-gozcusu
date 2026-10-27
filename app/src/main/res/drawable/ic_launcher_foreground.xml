@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Brand mark: a licence-plate outline with a scanning "eye" (lens + scan line). 108dp adaptive canvas,
+     artwork kept inside the 66dp safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- plate outline -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FF5FE0CD"
+        android:strokeWidth="3.5"
+        android:pathData="M30,40 L78,40 Q84,40 84,46 L84,62 Q84,68 78,68 L30,68 Q24,68 24,62 L24,46 Q24,40 30,40 Z" />
+    <!-- TR band on the plate's left edge -->
+    <path
+        android:fillColor="#FF5FE0CD"
+        android:pathData="M30,40 L34,40 L34,68 L30,68 Q24,68 24,62 L24,46 Q24,40 30,40 Z" />
+    <!-- lens -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFE3E9EF"
+        android:strokeWidth="3"
+        android:pathData="M59,54 m-8,0 a8,8 0 1,0 16,0 a8,8 0 1,0 -16,0" />
+    <path
+        android:fillColor="#FFE3E9EF"
+        android:pathData="M59,54 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" />
+    <!-- scan line -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#995FE0CD"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M40,32 L68,32" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#995FE0CD"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M40,76 L68,76" />
+</vector>

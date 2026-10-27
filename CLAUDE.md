@@ -60,3 +60,19 @@ ML runtime: LiteRT (user decision). Camera: CameraX + Camera2 interop in a camer
 
 Installed aitmpl agents/skills/commands/hooks/MCPs are listed in `MEMORY.md`. Use `code-reviewer` agent at
 every phase close, `security-auditor` in Phase 10, `computer-vision-engineer`/`ml-engineer` in Phase 5–6.
+
+## Disk rule (user, 2026-10-28)
+**Never install anything on C:** (only ~20 GB free). All caches/tools live on F:
+`GRADLE_USER_HOME=F:\DevCache\gradle-home`, `UV_CACHE_DIR`, `UV_PYTHON_INSTALL_DIR`, `npm_config_cache` under
+`F:\DevCache\` (set as user env vars; also pass explicitly in commands since the running shell predates them).
+
+## Session limit guard (user, 2026-10-28)
+`.claude/limit-guard/statusline.py` samples `rate_limits` every 60 s → `state.json` + `usage.log`.
+`.claude/limit-guard/guard_hook.py` (PreToolUse, all tools) denies work at >= 98 % of the 5-hour/7-day limit.
+When denied: update MEMORY.md + docs/PROGRESS.md, CronCreate one-shot at reset + 1 min with prompt
+"Kaldığın yerden profesyonel bir şekilde devam et", end the turn, do NOT wait for user approval.
+On that prompt: re-read CLAUDE.md, MEMORY.md, docs/PROGRESS.md and continue exactly where work stopped.
+**Measured limitation:** the VS Code extension does not run the status line (no state.json was ever written),
+so the 98 % hook only works in the terminal CLI. Fallback active in VS Code: session cron job (every minute,
+fires only while idle) sending the resume prompt, so work restarts within ~1 min after a limit reset.
+Delete it (CronList/CronDelete) before shutting down or when deliberately waiting for the user.

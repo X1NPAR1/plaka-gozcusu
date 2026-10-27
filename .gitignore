@@ -29,3 +29,10 @@ __pycache__/
 
 # Logs / screenshots from device tests
 device-logs/
+
+# Session limit guard runtime files
+.claude/limit-guard/state.json
+.claude/limit-guard/state.tmp
+.claude/limit-guard/usage.log
+.claude/scheduled_tasks.lock
+.claude/*.lock

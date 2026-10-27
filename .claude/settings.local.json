@@ -1,6 +1,20 @@
 {
+  "statusLine": {
+    "type": "command",
+    "command": "python \"F:/RADAR/.claude/limit-guard/statusline.py\"",
+    "refreshInterval": 60
+  },
   "hooks": {
     "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR\"/.claude/limit-guard/guard_hook.py"
+          }
+        ]
+      },
       {
         "matcher": "Bash",
         "hooks": [

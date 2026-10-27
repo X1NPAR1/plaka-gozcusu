@@ -1,0 +1,18 @@
+# Project overrides on top of detekt defaults (buildUponDefaultConfig = true).
+naming:
+  FunctionNaming:
+    # Composables are PascalCase by convention.
+    ignoreAnnotated: ['Composable']
+  TopLevelPropertyNaming:
+    constantPattern: '[A-Z][A-Za-z0-9_]*'
+complexity:
+  LongParameterList:
+    # Composables legitimately take many parameters (modifier, state, callbacks).
+    ignoreAnnotated: ['Composable']
+style:
+  MagicNumber:
+    # Design tokens and previews are declared as named constants in token files.
+    ignorePropertyDeclaration: true
+    excludes: ['**/test/**', '**/androidTest/**', '**/designsystem/theme/**']
+  UnusedPrivateMember:
+    ignoreAnnotated: ['Preview']
