@@ -11,10 +11,14 @@ import androidx.navigation.compose.rememberNavController
 import com.plakagozcusu.app.home.HomeScreen
 import com.plakagozcusu.core.designsystem.theme.Motion
 import com.plakagozcusu.feature.onboarding.OnboardingScreen
+import com.plakagozcusu.feature.onboarding.calibration.CalibrationScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
 data object OnboardingRoute
+
+@Serializable
+data object CalibrationRoute
 
 @Serializable
 data object HomeRoute
@@ -37,8 +41,17 @@ fun PlakaGozcusuNavHost(modifier: Modifier = Modifier) {
         composable<OnboardingRoute> {
             OnboardingScreen(
                 onFinished = {
-                    navController.navigate(HomeRoute) {
+                    navController.navigate(CalibrationRoute) {
                         popUpTo(OnboardingRoute) { inclusive = true }
+                    }
+                },
+            )
+        }
+        composable<CalibrationRoute> {
+            CalibrationScreen(
+                onDone = {
+                    navController.navigate(HomeRoute) {
+                        popUpTo(CalibrationRoute) { inclusive = true }
                     }
                 },
             )

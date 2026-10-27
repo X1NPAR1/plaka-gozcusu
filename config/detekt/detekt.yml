@@ -6,6 +6,9 @@ naming:
   TopLevelPropertyNaming:
     constantPattern: '[A-Z][A-Za-z0-9_]*'
 complexity:
+  TooManyFunctions:
+    # Classes implementing a wide platform interface (CameraController) or a screen's VM actions.
+    thresholdInClasses: 15
   LongParameterList:
     # Composables legitimately take many parameters (modifier, state, callbacks).
     ignoreAnnotated: ['Composable']
@@ -16,3 +19,7 @@ style:
     excludes: ['**/test/**', '**/androidTest/**', '**/designsystem/theme/**']
   UnusedPrivateMember:
     ignoreAnnotated: ['Preview']
+  ReturnCount:
+    # Early-return guard clauses are the clearest way to handle "camera not bound / not supported".
+    max: 3
+    excludeGuardClauses: true

@@ -1,7 +1,8 @@
 # MEMORY.md — Decision log & project memory
 
 ## Current state
-- Phase 2 done 2026-10-28; Phase 3 (camera) in progress.
+- Phase 3 done 2026-10-28 (device check blocked). USER PAUSED work; next = Phase 4 data layer when user says continue.
+- Gradle memory: Xmx3g + in-process Kotlin (pagefile exhaustion seen with 4g + Kotlin daemons).
 - User rules: nothing on C: (F:\DevCache), auto-resume after limit, shutdown PC when all non-blocked work is done.
 - Next: Phase 2 foundation (Gradle multi-module).
 

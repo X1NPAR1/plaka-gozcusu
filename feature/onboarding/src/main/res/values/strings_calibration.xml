@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Turkish nouns stay singular after numerals ("3 nokta", "152 piksel"), so lint's
+     PluralsCandidate check does not apply to these strings. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="calibration_title">Kurulum ve kalibrasyon</string>
+    <string name="calibration_done">Bitti</string>
+
+    <string name="permission_camera_title">Kamera izni gerekiyor</string>
+    <string name="permission_camera_body">Yoldan geçen araçları görebilmek için uygulamanın kameraya erişmesi gerekir. Görüntüler bu telefondan dışarı gönderilmez.</string>
+    <string name="permission_camera_request">Kamera iznini ver</string>
+    <string name="permission_camera_denied_body">Kamera izni reddedildi. İzin olmadan izleme yapılamaz; tekrar denemek için aşağıdaki düğmeye dokun.</string>
+    <string name="permission_camera_permanent_body">Kamera izni kalıcı olarak reddedilmiş. Ayarlar sayfasında "İzinler" bölümünden kamerayı açman gerekiyor.</string>
+    <string name="permission_open_settings">Ayarları aç</string>
+
+    <string name="calibration_mode_roi">Yol alanı</string>
+    <string name="calibration_mode_focus">Odak</string>
+    <string name="calibration_hint_roi">İzlenecek yol alanının köşelerine sırayla dokun (en az 3 nokta).</string>
+    <string name="calibration_hint_focus">Odaklamak istediğin yol noktasına dokun.</string>
+    <string name="calibration_roi_undo">Son noktayı sil</string>
+    <string name="calibration_roi_clear">Temizle</string>
+    <string name="calibration_roi_points" tools:ignore="PluralsCandidate">%1$d nokta</string>
+    <string name="calibration_zoom">Yakınlaştırma: %1$.1fx</string>
+    <string name="calibration_exposure">Pozlama: %1$+d</string>
+    <string name="calibration_focus_lock">Odağı kilitle</string>
+    <string name="calibration_focus_unlock">Odak kilidini aç</string>
+    <string name="calibration_test_capture">Test fotoğrafı çek</string>
+    <string name="calibration_capturing">Çekiliyor…</string>
+    <string name="calibration_capture_result" tools:ignore="PluralsCandidate">Çekilen fotoğraf: %1$d × %2$d piksel (%3$s)</string>
+    <string name="calibration_capture_failed">Test fotoğrafı çekilemedi. Kamerayı başka bir uygulama kullanıyor olabilir; birkaç saniye sonra tekrar dene.</string>
+
+    <string name="calibration_estimate_title">Teorik plaka genişliği tahmini</string>
+    <string name="calibration_estimate_note">Bu değerler lens bilgisinden hesaplanan üst sınırlardır (bulanıklık, gece ve sıkıştırma hesaba katılmaz). Gerçek uygunluk, sahada çekilen fotoğraflardaki ölçümlerle belirlenir.</string>
+    <string name="calibration_estimate_row" tools:ignore="PluralsCandidate">%1$d m: ~%2$d piksel</string>
+    <string name="calibration_estimate_unavailable">Telefon lens bilgilerini bildirmediği için tahmin yapılamıyor.</string>
+
+    <string name="calibration_camera_info">Kamera: %1$s mm lens, en büyük fotoğraf %2$s, yakınlaştırma %3$.1f–%4$.1fx</string>
+    <string name="calibration_camera_starting">Kamera başlatılıyor…</string>
+    <string name="calibration_camera_in_use">Kamera başka bir uygulama tarafından kullanılıyor. O uygulamayı kapatınca görüntü otomatik olarak geri gelecek.</string>
+    <string name="calibration_camera_failed">Kamera açılamadı. Uygulamayı kapatıp yeniden açmayı dene.</string>
+    <string name="calibration_preview_description">Kamera önizlemesi. Seçili moda göre dokunarak yol alanı noktası ekleyebilir veya odak ayarlayabilirsin.</string>
+    <string name="unknown_value">bilinmiyor</string>
+</resources>

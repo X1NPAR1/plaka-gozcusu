@@ -36,3 +36,8 @@ device-logs/
 .claude/limit-guard/usage.log
 .claude/scheduled_tasks.lock
 .claude/*.lock
+
+# IDE/JVM artifacts
+**/bin/
+hs_err_pid*.log
+replay_pid*.log
