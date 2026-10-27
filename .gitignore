@@ -1,0 +1,31 @@
+# Gradle / build
+.gradle/
+build/
+**/build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Private evaluation data (never commit real plates)
+datasets/private/
+eval/private/
+
+# Python tooling
+.venv/
+__pycache__/
+*.pyc
+
+# Logs / screenshots from device tests
+device-logs/

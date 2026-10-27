@@ -1,0 +1,33 @@
+---
+name: turkish-test-guide
+description: Write a beginner-friendly manual test step for the user in Turkish using the mandatory Plaka Gözcüsü format (Test ID, Amaç, Gerekenler, Hazırlık, Adımlar, Beklenen sonuç, Başarısız sayılır eğer, Toplanacak kanıt, Bildirim şablonu, Gizlilik notu). Use whenever a manual/device test is needed or docs/TEST_PLAN.md manual sections are written.
+---
+
+# turkish-test-guide
+
+Plain Turkish for a beginner; explain each technical term once. Commands in copy-paste code blocks for
+Windows PowerShell; adb as `& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe"`.
+
+Template:
+
+```markdown
+### Test <ID> — <Başlık>
+**Amaç:** …
+**Gerekenler:** …
+**Hazırlık:** …
+**Adım adım yapılacaklar:**
+1. …
+**Beklenen sonuç:** …
+**Başarısız sayılır eğer…** …
+**Toplanacak ekran görüntüsü/log:** …
+**Sonucu Claude Code'a nasıl bildireceksin:**
+    Test <ID> sonucu: BAŞARILI / BAŞARISIZ / KISMEN
+    Telefon modeli: …
+    Ortam (gündüz/akşam/gece, hava): …
+    Gözlem: …
+    Ekler: (ekran görüntüsü / log dosya adı)
+**Gizlilik/güvenlik notu:** Önce kendi veya izin veren kişilerin araçlarıyla test et. Paylaşacağın
+görüntülerde başkalarına ait plakaları ve yüzleri karart. Telefonu düşmeyecek şekilde sabitle.
+```
+
+Append the test to the manual section of `docs/TEST_PLAN.md` and reference it in the phase report.

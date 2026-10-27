@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ]
+    },
+    "android-mcp": {
+      "command": "C:/Users/krmkr/AppData/Roaming/Python/Python312/Scripts/uvx.exe",
+      "args": [
+        "--python",
+        "3.13",
+        "android-mcp"
+      ]
+    }
+  }
+}
