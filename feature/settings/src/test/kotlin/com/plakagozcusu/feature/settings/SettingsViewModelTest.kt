@@ -6,6 +6,7 @@ import com.google.common.truth.Truth.assertThat
 import com.plakagozcusu.core.datastore.SecretStore
 import com.plakagozcusu.core.datastore.SettingsRepository
 import com.plakagozcusu.core.model.AnalysisLoad
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
@@ -34,7 +35,7 @@ class SettingsViewModelTest {
         Dispatchers.setMain(dispatcher)
         val store = PreferenceDataStoreFactory.create { File(tmp.root, "s.preferences_pb") }
         repo = SettingsRepository(store)
-        vm = SettingsViewModel(repo, SecretStore(store))
+        vm = SettingsViewModel(repo, SecretStore(store), mockk(relaxed = true))
     }
 
     @After

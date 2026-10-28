@@ -27,6 +27,7 @@ import org.junit.runner.RunWith
 import java.io.File
 import java.time.Instant
 import java.time.ZoneId
+import kotlin.time.Duration.Companion.minutes
 
 @RunWith(AndroidJUnit4::class)
 class ObservationRepositoryTest {
@@ -159,7 +160,8 @@ class ObservationRepositoryTest {
 
     @Test
     fun `retention never deletes a record protected after planning and handles huge selections`() =
-        runTest {
+        // 1,200 real file+row saves: slow on CI-class machines, so allow more than the 1-minute default.
+        runTest(timeout = 5.minutes) {
             val day = 24L * 60 * 60 * 1000
             repeat(1_200) { i -> saved(observation("old$i", at = nowMs - 40 * day)) }
             repo.setProtected((0 until 600).map { "old$it" }, true)

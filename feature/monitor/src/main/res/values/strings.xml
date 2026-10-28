@@ -24,7 +24,6 @@
     <string name="monitor_calibrate">Kalibrasyon</string>
     <string name="live_description">Canlı kamera görüntüsü; algılanan araçlar çerçeveyle gösterilir.</string>
     <string name="today_title">Bugün</string>
-    <string name="today_counts" tools:ignore="PluralsCandidate">%1$d araç · %2$d plaka okundu · %3$d inceleme gerekli · %4$d okunamadı</string>
     <string name="storage_line">Kayıtların kapladığı alan: %1$s · Boş alan: %2$s</string>
     <string name="latest_title">Son kayıtlar</string>
     <string name="latest_empty">Henüz kayıt yok.</string>

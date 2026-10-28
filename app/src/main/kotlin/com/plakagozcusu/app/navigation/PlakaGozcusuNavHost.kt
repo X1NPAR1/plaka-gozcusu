@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -150,38 +151,7 @@ private fun AppNavGraph(
                 },
             )
         }
-        composable<RecordsRoute> {
-            PgScreen(
-                title = stringResource(R.string.tab_records),
-            ) { inner ->
-                RecordsScreen(
-                    modifier = inner,
-                    onOpen = { nav.navigate(DetailRoute(it)) },
-                    appVersion = appVersion,
-                )
-            }
-        }
-        composable<IncidentRoute> {
-            PgScreen(
-                title = stringResource(R.string.tab_incident),
-            ) { inner ->
-                IncidentScreen(
-                    modifier = inner,
-                    onOpen = { nav.navigate(DetailRoute(it)) },
-                    appVersion = appVersion,
-                )
-            }
-        }
-        composable<SettingsRoute> {
-            PgScreen(
-                title = stringResource(R.string.tab_settings),
-            ) { inner ->
-                SettingsScreen(modifier = inner, onRecalibrate = {
-                    navVm.releaseCameraForCalibration()
-                    nav.navigate(CalibrationRoute)
-                }, appVersion = appVersion, modelVersions = MODEL_VERSIONS_LABEL)
-            }
-        }
+        tabScreens(nav, appVersion, navVm)
         composable<DetailRoute> {
             PgScreen(
                 title = stringResource(R.string.detail_title),
@@ -190,6 +160,45 @@ private fun AppNavGraph(
             ) { inner ->
                 DetailScreen(modifier = inner, onDeleted = { nav.popBackStack() }, appVersion = appVersion)
             }
+        }
+    }
+}
+
+private fun NavGraphBuilder.tabScreens(
+    nav: NavHostController,
+    appVersion: String,
+    navVm: AppNavViewModel,
+) {
+    composable<RecordsRoute> {
+        PgScreen(
+            title = stringResource(R.string.tab_records),
+        ) { inner ->
+            RecordsScreen(
+                modifier = inner,
+                onOpen = { nav.navigate(DetailRoute(it)) },
+                appVersion = appVersion,
+            )
+        }
+    }
+    composable<IncidentRoute> {
+        PgScreen(
+            title = stringResource(R.string.tab_incident),
+        ) { inner ->
+            IncidentScreen(
+                modifier = inner,
+                onOpen = { nav.navigate(DetailRoute(it)) },
+                appVersion = appVersion,
+            )
+        }
+    }
+    composable<SettingsRoute> {
+        PgScreen(
+            title = stringResource(R.string.tab_settings),
+        ) { inner ->
+            SettingsScreen(modifier = inner, onRecalibrate = {
+                navVm.releaseCameraForCalibration()
+                nav.navigate(CalibrationRoute)
+            }, appVersion = appVersion, modelVersions = MODEL_VERSIONS_LABEL)
         }
     }
 }

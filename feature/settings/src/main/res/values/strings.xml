@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Turkish nouns stay singular after numerals, so PluralsCandidate does not apply. -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="settings_title">Ayarlar</string>
     <string name="settings_load">Analiz yükü</string>
     <string name="load_low">Düşük</string>
     <string name="load_balanced">Dengeli</string>
@@ -26,8 +25,14 @@
     <string name="ai_privacy">Dikkat: Bu özellik açıldığında plaka görüntüleri telefondan çıkar. Ücretsiz Gemini kullanımında Google, gönderilen içeriği kendi ürünlerini geliştirmek için kullanabilir. Başkalarına ait plakaları göndermenin hukuki sorumluluğu (KVKK) sana aittir. API anahtarını aistudio.google.com adresinden ücretsiz alabilirsin; anahtar telefonda şifreli saklanır.</string>
     <string name="ai_key">Gemini API anahtarı</string>
     <string name="ai_key_saved">Anahtar kayıtlı (değiştirmek için yenisini yaz)</string>
-    <string name="ai_model">Model (ör. gemini-2.5-flash)</string>
     <string name="ai_save">Kaydet</string>
     <string name="ai_remove">Anahtarı sil</string>
     <string name="ai_enable">Yapay zekâ doğrulamasını kullan</string>
+    <string name="ai_step_provider">1. Yapay zekâ sağlayıcısı</string>
+    <string name="ai_provider_gemini">Google Gemini (ücretsiz kota)</string>
+    <string name="ai_step_key">2. API anahtarı</string>
+    <string name="ai_step_model">3. Model</string>
+    <string name="ai_models_loading">Hesabındaki modeller getiriliyor…</string>
+    <string name="ai_models_error">Modeller getirilemedi. Anahtarı ve internet bağlantısını kontrol edip Kaydet\u2019e tekrar bas.</string>
+    <string name="ai_models_empty">Bu anahtar için görüntü okuyabilen model bulunamadı.</string>
 </resources>

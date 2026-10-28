@@ -68,4 +68,14 @@
     <string name="ai_differs">Yapay zekânın önerisi: %1$s</string>
     <string name="ai_accept">Öneriyi kabul et</string>
     <string name="ai_ask">Yapay zekâya sor</string>
+    <string name="ai_running">Yapay zekâya soruluyor…</string>
+    <string name="ai_done">Yapay zekâ yanıt verdi; sonuç yukarıda.</string>
+    <string name="ai_err_key_missing">API anahtarı kayıtlı değil. Ayarlar → Yapay zekâ bölümünden anahtarı gir.</string>
+    <string name="ai_err_no_image">Bu kayıtta yapay zekâya gönderilecek plaka/araç görüntüsü yok.</string>
+    <string name="ai_err_user_confirmed">Bu kaydı sen onayladın/düzelttin; yapay zekâ değiştirmez.</string>
+    <string name="ai_err_offline">İnternet bağlantısı yok veya istek zaman aşımına uğradı. (kod %1$d)</string>
+    <string name="ai_err_key">API anahtarı geçersiz ya da bu model için yetkisiz. Anahtarı kontrol et. (kod %1$d)</string>
+    <string name="ai_err_model">Seçilen model bulunamadı. Ayarlar\u2019dan listeden başka bir model seç. (kod %1$d)</string>
+    <string name="ai_err_quota">Ücretsiz kota doldu; bir süre sonra tekrar dene. (kod %1$d)</string>
+    <string name="ai_err_other">Yapay zekâ isteği başarısız oldu. (kod %1$d)</string>
 </resources>

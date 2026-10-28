@@ -39,6 +39,7 @@ data class AppSettings(
         )
 
     companion object {
+        /** Hint only; the real model is picked from the provider's live list (models get retired). */
         const val DEFAULT_AI_MODEL = "gemini-2.5-flash"
         const val DEFAULT_DETECTION_CONFIDENCE = 0.5f
         const val DEFAULT_HIGH_CONFIDENCE_QUALITY = 0.7f

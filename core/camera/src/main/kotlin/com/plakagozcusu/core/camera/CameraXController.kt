@@ -101,7 +101,7 @@ class CameraXController
                 )
             val analysis = buildAnalysis(config, ratio43, analyzer)
             val capture = buildCapture(ratio43)
-            val preview = if (config.withPreview) buildPreview(ratio43) else null
+            val preview = if (config.withPreview) buildPreview(ratio43) { request -> _surfaceRequest.value = request } else null
 
             val bound =
                 tryBind(cameraProvider, owner, listOfNotNull(preview, analysis, capture))
@@ -163,13 +163,6 @@ class CameraXController
                 }
             }
         }
-
-        private fun buildPreview(ratio: AspectRatioStrategy): Preview =
-            Preview
-                .Builder()
-                .setResolutionSelector(ResolutionSelector.Builder().setAspectRatioStrategy(ratio).build())
-                .build()
-                .also { it.setSurfaceProvider { request -> _surfaceRequest.value = request } }
 
         private fun buildAnalysis(
             config: CameraConfig,
@@ -384,3 +377,13 @@ private fun buildCapture(ratio: AspectRatioStrategy): ImageCapture =
                 .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
                 .build(),
         ).build()
+
+private fun buildPreview(
+    ratio: AspectRatioStrategy,
+    onSurface: (SurfaceRequest) -> Unit,
+): Preview =
+    Preview
+        .Builder()
+        .setResolutionSelector(ResolutionSelector.Builder().setAspectRatioStrategy(ratio).build())
+        .build()
+        .also { it.setSurfaceProvider { request -> onSurface(request) } }

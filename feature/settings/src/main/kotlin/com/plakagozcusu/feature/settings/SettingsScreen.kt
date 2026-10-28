@@ -16,6 +16,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,7 +84,7 @@ private fun LabeledSlider(
 }
 
 @Composable
-private fun ToggleRow(
+internal fun ToggleRow(
     label: String,
     checked: Boolean,
     onChange: (Boolean) -> Unit,
@@ -188,46 +189,5 @@ private fun AboutCard(
         Text(stringResource(R.string.settings_about), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(R.string.settings_versions, appVersion, modelVersions), style = MaterialTheme.typography.bodySmall)
         Text(stringResource(R.string.settings_licenses), style = MaterialTheme.typography.bodySmall)
-    }
-}
-
-@Composable
-private fun AiCard(
-    settings: AppSettings,
-    viewModel: SettingsViewModel,
-) {
-    val hasKey by viewModel.hasAiKey.collectAsStateWithLifecycle()
-    var key by remember { mutableStateOf("") }
-    var model by remember(settings.aiModel) { mutableStateOf(settings.aiModel) }
-    PgCard(Modifier.fillMaxWidth()) {
-        Text(stringResource(R.string.ai_title), style = MaterialTheme.typography.titleMedium)
-        Text(stringResource(R.string.ai_body), style = MaterialTheme.typography.bodyMedium)
-        Text(stringResource(R.string.ai_privacy), style = MaterialTheme.typography.bodySmall, color = PgTheme.status.warning)
-        OutlinedTextField(
-            value = key,
-            onValueChange = { key = it },
-            label = { Text(stringResource(if (hasKey) R.string.ai_key_saved else R.string.ai_key)) },
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth(),
-        )
-        OutlinedTextField(
-            value = model,
-            onValueChange = { model = it },
-            label = { Text(stringResource(R.string.ai_model)) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm)) {
-            PgSecondaryButton(stringResource(R.string.ai_save), {
-                if (key.isNotBlank()) viewModel.saveAiKey(key)
-                key = ""
-                viewModel.update { it.copy(aiModel = model.ifBlank { AppSettings.DEFAULT_AI_MODEL }) }
-            })
-            if (hasKey) PgSecondaryButton(stringResource(R.string.ai_remove), { viewModel.saveAiKey("") })
-        }
-        ToggleRow(stringResource(R.string.ai_enable), settings.aiEnabled && hasKey) { v ->
-            if (hasKey) viewModel.update { it.copy(aiEnabled = v) }
-        }
     }
 }

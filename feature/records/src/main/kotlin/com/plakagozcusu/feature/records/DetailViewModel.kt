@@ -22,7 +22,7 @@ import javax.inject.Inject
 class DetailViewModel
     @Inject
     constructor(
-        @param:dagger.hilt.android.qualifiers.ApplicationContext private val app: android.content.Context,
+        private val ai: com.plakagozcusu.core.data.ai.AiService,
         savedState: SavedStateHandle,
         private val repository: ObservationRepository,
         private val actions: RecordActions,
@@ -49,11 +49,14 @@ class DetailViewModel
             viewModelScope.launch { _integrity.value = repository.verifyEvidence(o) }
         }
 
-        /** Queues the optional AI check (no-op inside the worker if disabled or no key). */
+        private val _aiState = MutableStateFlow<AiUiState>(AiUiState.Idle)
+        val aiState: StateFlow<AiUiState> = _aiState.asStateFlow()
+
+        /** Explicit user request: runs now (does not need the background toggle), with visible feedback. */
         fun askAi() =
             mutate {
-                com.plakagozcusu.core.data.ai.AiVerifyWorker
-                    .enqueue(app, it.id)
+                _aiState.value = AiUiState.Running
+                _aiState.value = AiUiState.Finished(ai.check(it.id, requireEnabled = false))
             }
 
         /** Accepting the AI suggestion is a user decision: stored as a user correction/verification. */
@@ -96,3 +99,13 @@ class DetailViewModel
             private const val STOP_MS = 5_000L
         }
     }
+
+sealed interface AiUiState {
+    data object Idle : AiUiState
+
+    data object Running : AiUiState
+
+    data class Finished(
+        val outcome: com.plakagozcusu.core.data.ai.AiCheckOutcome,
+    ) : AiUiState
+}

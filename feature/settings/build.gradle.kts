@@ -8,5 +8,7 @@ android {
 
 dependencies {
     implementation(project(":core:datastore"))
+    implementation(project(":core:data"))
     testImplementation(libs.datastore.preferences)
+    testImplementation(libs.mockk)
 }
