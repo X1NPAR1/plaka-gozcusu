@@ -11,4 +11,5 @@ dependencies {
     api(platform(libs.compose.bom))
     api(libs.compose.material3)
     api(libs.compose.animation)
+    api(project(":core:model"))
 }

@@ -66,8 +66,7 @@ data class Calibration(
     companion object {
         private const val CENTER = 0.5f
 
-        fun encodeRoi(points: List<Pair<Float, Float>>): String =
-            points.joinToString(";") { "${it.first},${it.second}" }
+        fun encodeRoi(points: List<Pair<Float, Float>>): String = points.joinToString(";") { "${it.first},${it.second}" }
 
         fun decodeRoi(text: String?): List<Pair<Float, Float>> =
             text

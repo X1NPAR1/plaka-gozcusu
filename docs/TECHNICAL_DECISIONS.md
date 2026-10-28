@@ -46,3 +46,10 @@ FOREGROUND_SERVICE + FOREGROUND_SERVICE_CAMERA + CAMERA; `foregroundServiceType=
 cannot be started from the background nor from BOOT_COMPLETED (while-in-use restriction; targetSdk 35+).
 Consequence: monitoring only starts from the visible UI; after reboot/process death the app offers
 "resume" instead of auto-starting. START_NOT_STICKY. No timeout applies to the camera type.
+
+## ADR-009 UI module consolidation
+Spec listed :feature:{monitor,records,detail,incident,settings,onboarding}. Implemented as
+:feature:monitor (dashboard + live view + service), :feature:records (timeline, incident finder, detail,
+export) and :feature:settings, plus :feature:onboarding (onboarding + calibration). Detail/incident share
+the record row, export and bulk-action code, so one module avoids cross-feature dependencies.
+Evidence export uses the Storage Access Framework (user picks destination); no FileProvider/auto-share.

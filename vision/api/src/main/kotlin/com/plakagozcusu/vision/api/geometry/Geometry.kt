@@ -9,8 +9,7 @@ data class Size(
         require(width > 0 && height > 0) { "Size must be positive: ${width}x$height" }
     }
 
-    fun rotated(rotationDegrees: Int): Size =
-        if (normalizeRotation(rotationDegrees) % HALF_TURN == 0) this else Size(height, width)
+    fun rotated(rotationDegrees: Int): Size = if (normalizeRotation(rotationDegrees) % HALF_TURN == 0) this else Size(height, width)
 }
 
 data class PointF(
@@ -56,8 +55,7 @@ data class RectF(
     fun touchesEdgeOf(
         size: Size,
         marginPx: Float,
-    ): Boolean =
-        left <= marginPx || top <= marginPx || right >= size.width - marginPx || bottom >= size.height - marginPx
+    ): Boolean = left <= marginPx || top <= marginPx || right >= size.width - marginPx || bottom >= size.height - marginPx
 }
 
 internal const val FULL_TURN = 360

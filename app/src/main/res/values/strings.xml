@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Plaka Gözcüsü</string>
-    <string name="home_title">Plaka Gözcüsü</string>
-    <string name="home_not_ready_title">İzleme henüz hazır değil</string>
-    <string name="home_not_ready_body">Kamera ve tanıma özellikleri geliştirme aşamasında. Bu sürümde henüz kayıt alınmaz; ekranda gösterilen her bilgi gerçek veriden gelecektir.</string>
-    <string name="home_status_setup">Kurulum tamamlandı</string>
-    <string name="home_restart_onboarding">Tanıtımı yeniden göster</string>
+    <string name="tab_home">Ana ekran</string>
+    <string name="tab_records">Kayıtlar</string>
+    <string name="tab_incident">Olay Bul</string>
+    <string name="tab_settings">Ayarlar</string>
 </resources>

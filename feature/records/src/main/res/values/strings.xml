@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Turkish nouns stay singular after numerals, so PluralsCandidate does not apply. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="records_search">Plaka ara (ör. 34 AB veya 123)</string>
+    <string name="records_empty_title">Kayıt yok</string>
+    <string name="records_empty_body">Bu filtrelere uyan araç geçişi bulunamadı.</string>
+    <string name="filter_review">İnceleme gerekli</string>
+    <string name="filter_unreadable">Okunamadı</string>
+    <string name="filter_starred">Yıldızlı</string>
+    <string name="filter_protected">Korunan</string>
+    <string name="selected_count" tools:ignore="PluralsCandidate">%1$d seçili</string>
+    <string name="action_protect">Koru</string>
+    <string name="action_unprotect">Korumayı kaldır</string>
+    <string name="action_delete">Sil</string>
+    <string name="action_export">Dışa aktar</string>
+    <string name="action_cancel">Vazgeç</string>
+    <string name="action_save">Kaydet</string>
+    <string name="action_star">Yıldızla</string>
+    <string name="action_unstar">Yıldızı kaldır</string>
+    <string name="confirm_delete_title">Silinsin mi?</string>
+    <string name="confirm_delete_body">Seçilen kayıtlar ve fotoğrafları kalıcı olarak silinecek.</string>
+    <string name="plate_unknown">Plaka okunamadı</string>
+    <string name="protected_label">Korunuyor</string>
+    <string name="thumbnail_description">Araç fotoğrafı</string>
+
+    <string name="incident_hint">Olayın olduğu zaman aralığını seç; o sürede geçen tüm araçlar (okunamayanlar dahil) sırayla listelenir.</string>
+    <string name="preset_last_hour">Son 1 saat</string>
+    <string name="preset_last_day">Son 24 saat</string>
+    <string name="preset_today">Bugün</string>
+    <string name="preset_yesterday">Dün</string>
+    <string name="incident_pick_from">Başlangıç</string>
+    <string name="incident_pick_to">Bitiş</string>
+    <string name="incident_count" tools:ignore="PluralsCandidate">Bu aralıkta %1$d araç</string>
+    <string name="incident_protect_all">Tümünü koru</string>
+    <string name="incident_export_all">Kanıt paketi oluştur</string>
+
+    <string name="export_running">Kanıt paketi hazırlanıyor…</string>
+    <string name="export_done" tools:ignore="PluralsCandidate">%1$d kayıt dışa aktarıldı.</string>
+    <string name="export_done_with_failures" tools:ignore="PluralsCandidate">%1$d kayıt dışa aktarıldı; %2$d dosya doğrulanamadı (raporda işaretli).</string>
+    <string name="export_failed">Dışa aktarma başarısız oldu. Başka bir konum seçip tekrar dene.</string>
+
+    <string name="detail_scene">Sahne</string>
+    <string name="detail_vehicle">Araç</string>
+    <string name="detail_plate">Plaka</string>
+    <string name="detail_raw_ocr">Ham OCR metni: %1$s</string>
+    <string name="detail_original">Otomatik okunan (düzeltme öncesi): %1$s</string>
+    <string name="detail_confidence">Plaka güveni: %1$.0f%% · Kalite: %2$.0f%%</string>
+    <string name="detail_time">Zaman: %1$s</string>
+    <string name="detail_seen">Görüldüğü süre: %1$s – %2$s</string>
+    <string name="detail_linked">Aynı plaka kısa süre önce de kaydedildi (bağlantılı kayıt).</string>
+    <string name="detail_correct">Plakayı düzelt</string>
+    <string name="detail_correct_hint">Plaka (ör. 34 AB 123)</string>
+    <string name="detail_note">Not ekle</string>
+    <string name="detail_verify">Dosya bütünlüğünü doğrula</string>
+    <string name="detail_verify_ok">Tüm dosyalar kayıt anındaki SHA-256 ile eşleşiyor.</string>
+    <string name="detail_verify_bad">Bazı dosyalar eksik veya değişmiş: %1$s</string>
+    <string name="detail_missing_file">Dosya bulunamadı</string>
+    <string name="detail_disclaimer">Plaka okuması otomatiktir ve hatalı olabilir; fotoğrafla karşılaştır.</string>
+</resources>

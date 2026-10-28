@@ -59,8 +59,7 @@ class ObservationRepository
 
         suspend fun query(query: ObservationQuery): List<Observation> = dao.query(query.toSql()).map { it.toModel() }
 
-        fun observeLatest(limit: Int): Flow<List<Observation>> =
-            dao.observeLatest(limit).map { r -> r.map { it.toModel() } }
+        fun observeLatest(limit: Int): Flow<List<Observation>> = dao.observeLatest(limit).map { r -> r.map { it.toModel() } }
 
         fun observe(id: String): Flow<Observation?> = dao.observe(id).map { it?.toModel() }
 

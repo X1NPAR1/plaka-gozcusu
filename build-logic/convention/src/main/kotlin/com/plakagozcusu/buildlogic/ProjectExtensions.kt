@@ -28,6 +28,9 @@ internal val PROJECT_JAVA_VERSION = JavaVersion.VERSION_17
 internal val PROJECT_JVM_TARGET = JvmTarget.JVM_17
 private const val TEST_JDK = 21
 
+/** Shared by ktlint (here) and detekt (config/detekt/detekt.yml). */
+private const val MAX_LINE_LENGTH = "140"
+
 internal fun Project.configureAndroidCommon(extension: CommonExtension) {
     extension.apply {
         compileSdk = libs.version("compileSdk").toInt()
@@ -94,7 +97,10 @@ internal fun Project.configureStaticAnalysis() {
         kotlin {
             target("src/**/*.kt")
             ktlint(libs.version("ktlint")).editorConfigOverride(
-                mapOf("ktlint_function_naming_ignore_when_annotated_with" to "Composable"),
+                mapOf(
+                    "ktlint_function_naming_ignore_when_annotated_with" to "Composable",
+                    "max_line_length" to MAX_LINE_LENGTH,
+                ),
             )
         }
         kotlinGradle {

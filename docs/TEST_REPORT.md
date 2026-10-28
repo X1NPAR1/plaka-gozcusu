@@ -30,3 +30,9 @@ no plate, disagreement → review, camera jolt pause). On-device inference/bench
 Full verify → BUILD SUCCESSFUL. Unit tests total=129 passed=129 failed=0 skipped=0
 (new: MonitoringSessionTest 8; repository/pipeline regression tests for the phase 4–6 review findings).
 Service lifecycle on a real device (screen off, lock, background, interruption) is untested — Phase 9.
+
+## Phase 8 (2026-10-28)
+Full verify → BUILD SUCCESSFUL. Unit tests total=138 passed=138 failed=0 skipped=0
+(new: EvidenceExporterTest 3, RecordsLogicTest 4, SettingsViewModelTest 1, calibration persistence test).
+Compose UI instrumented tests and screenshot review: not run (no device/emulator) — listed for Phase 9.
+Style decision: max line length 140 (ktlint + detekt) to avoid noisy wrapping of Compose chains.

@@ -12,3 +12,8 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(testFixtures(project(":core:camera")))
 }
+
+dependencies {
+    implementation(project(":core:datastore"))
+    testImplementation(libs.datastore.preferences)
+}

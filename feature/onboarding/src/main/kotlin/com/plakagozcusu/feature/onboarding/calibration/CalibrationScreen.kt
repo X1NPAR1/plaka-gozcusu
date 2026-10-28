@@ -89,7 +89,7 @@ fun CalibrationScreen(
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.weight(1f).semantics { heading() },
                     )
-                    PgTextButton(stringResource(R.string.calibration_done), onClick = onDone)
+                    PgTextButton(stringResource(R.string.calibration_done), onClick = { viewModel.save(onDone) })
                 }
                 CameraStatusLine(state.camera)
                 Box(Modifier.fillMaxWidth().aspectRatio(uprightAspect())) {

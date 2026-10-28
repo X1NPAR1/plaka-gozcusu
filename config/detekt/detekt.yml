@@ -25,3 +25,6 @@ style:
     # Early-return guard clauses are the clearest way to handle "camera not bound / not supported".
     max: 3
     excludeGuardClauses: true
+  MaxLineLength:
+    # Matches .editorconfig (ktlint); Compose call chains read better at 140.
+    maxLineLength: 140

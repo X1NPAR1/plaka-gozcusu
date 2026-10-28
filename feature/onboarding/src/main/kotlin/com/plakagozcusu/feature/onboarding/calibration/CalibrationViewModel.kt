@@ -9,6 +9,8 @@ import com.plakagozcusu.core.camera.CameraController
 import com.plakagozcusu.core.camera.CameraState
 import com.plakagozcusu.core.common.AppError
 import com.plakagozcusu.core.common.AppResult
+import com.plakagozcusu.core.datastore.SettingsRepository
+import com.plakagozcusu.core.model.Calibration
 import com.plakagozcusu.vision.api.geometry.PointF
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -54,8 +57,44 @@ class CalibrationViewModel
     @Inject
     constructor(
         private val camera: CameraController,
+        private val settings: SettingsRepository,
     ) : ViewModel() {
         private val local = MutableStateFlow(CalibrationUiState())
+
+        init {
+            // Start from the saved calibration so re-calibrating only adjusts what changed.
+            viewModelScope.launch {
+                val saved = settings.settings.first().calibration
+                local.update { s -> s.copy(roi = RoiEditor(saved.roiPoints.map { PointF(it.first, it.second) })) }
+            }
+        }
+
+        /** Persists zoom, ROI, focus and exposure and marks onboarding as done. */
+        fun save(onSaved: () -> Unit) {
+            val ui = uiState.value
+            val ready = ui.camera as? CameraState.Ready
+            viewModelScope.launch {
+                settings.update { s ->
+                    s.copy(
+                        onboardingDone = true,
+                        calibration =
+                            Calibration(
+                                zoomRatio = ui.zoomRatio,
+                                roiPoints =
+                                    ui.roi.points
+                                        .map { it.x to it.y }
+                                        .takeIf { ui.roi.isComplete }
+                                        .orEmpty(),
+                                focusLocked = ui.focusLocked,
+                                focusX = ui.focusPoint?.x ?: s.calibration.focusX,
+                                focusY = ui.focusPoint?.y ?: s.calibration.focusY,
+                                exposureIndex = ready?.exposureIndex ?: s.calibration.exposureIndex,
+                            ),
+                    )
+                }
+                onSaved()
+            }
+        }
 
         val surfaceRequest = camera.surfaceRequest
 

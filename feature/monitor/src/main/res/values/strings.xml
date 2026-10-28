@@ -13,4 +13,22 @@
     <string name="pause_overheating">Telefon çok ısındı; soğuyana kadar izleme duraklatıldı.</string>
     <string name="pause_storage">Depolama alanı doldu; yeni kayıt alınamıyor. Eski kayıtları silin veya saklama ayarını değiştirin.</string>
     <string name="pause_stalled">Görüntü işleme takıldı; kamera yeniden başlatılıyor.</string>
+    <string name="dashboard_title">Plaka Gözcüsü</string>
+    <string name="status_idle">İzleme kapalı</string>
+    <string name="status_running">İzleniyor</string>
+    <string name="status_running_degraded">İzleniyor (ısınma nedeniyle düşük hız)</string>
+    <string name="status_stopping">Durduruluyor…</string>
+    <string name="monitor_start">İzlemeyi başlat</string>
+    <string name="monitor_stop">Durdur</string>
+    <string name="monitor_dim">Ekranı karart</string>
+    <string name="monitor_calibrate">Kalibrasyon</string>
+    <string name="live_description">Canlı kamera görüntüsü; algılanan araçlar çerçeveyle gösterilir.</string>
+    <string name="today_title">Bugün</string>
+    <string name="today_counts" tools:ignore="PluralsCandidate">%1$d araç · %2$d plaka okundu · %3$d inceleme gerekli · %4$d okunamadı</string>
+    <string name="storage_line">Kayıtların kapladığı alan: %1$s · Boş alan: %2$s</string>
+    <string name="latest_title">Son kayıtlar</string>
+    <string name="latest_empty">Henüz kayıt yok.</string>
+    <string name="loading">Yükleniyor…</string>
+    <string name="plate_unknown">Plaka okunamadı</string>
+    <string name="dim_hint">İzleme sürüyor. Ekrana dokunarak geri dön.</string>
 </resources>

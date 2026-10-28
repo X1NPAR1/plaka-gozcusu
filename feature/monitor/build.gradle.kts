@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":vision:models"))
     implementation(libs.androidx.lifecycle.service)
     implementation(libs.camerax.compose)
+    implementation(libs.coil.compose)
     implementation(libs.kotlinx.coroutines.android)
     testImplementation(testFixtures(project(":core:camera")))
 }

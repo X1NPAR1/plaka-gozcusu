@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Turkish nouns stay singular after numerals, so PluralsCandidate does not apply. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="settings_title">Ayarlar</string>
+    <string name="settings_load">Analiz yükü</string>
+    <string name="load_low">Düşük</string>
+    <string name="load_balanced">Dengeli</string>
+    <string name="load_high">Yüksek</string>
+    <string name="settings_load_hint">Yüksek yük daha fazla kare inceler ama telefonu daha çok ısıtır ve pili daha hızlı tüketir. Isınma algılanırsa uygulama hızı kendiliğinden düşürür.</string>
+    <string name="settings_storage">Depolama ve saklama</string>
+    <string name="settings_retention" tools:ignore="PluralsCandidate">Kayıtları sakla: %1$d gün</string>
+    <string name="settings_cap">En fazla kullanılacak alan: %1$.0f GB</string>
+    <string name="settings_protect_hint">\"Koru\" ile işaretlenen kayıtlar süre dolsa da otomatik silinmez.</string>
+    <string name="settings_recognition">Tanıma</string>
+    <string name="settings_duplicate" tools:ignore="PluralsCandidate">Aynı plakayı bağlantılı say: %1$d saniye içinde</string>
+    <string name="settings_overlays">Canlı görüntüde araç çerçevelerini göster</string>
+    <string name="settings_dark">Koyu tema</string>
+    <string name="settings_recalibrate">Kalibrasyonu yeniden yap</string>
+    <string name="settings_privacy_title">Gizlilik</string>
+    <string name="settings_privacy_body">Tüm görüntüler ve kayıtlar yalnızca bu telefonda saklanır; uygulamanın internet izni yoktur. Kayıtlar yedeklemeye ve cihaz aktarımına dahil edilmez. Kamerayı kendi mülkünün önüne ve bitişik yola yönelt. Bu uygulama hukuki uygunluk garantisi vermez; ayrıntılar için gizlilik belgesine bak.</string>
+    <string name="settings_about">Hakkında</string>
+    <string name="settings_versions">Uygulama %1$s · Modeller: %2$s</string>
+    <string name="settings_licenses">Açık kaynak: EfficientDet-Lite0 (Apache 2.0, TensorFlow), LiteRT (Apache 2.0), AndroidX/Jetpack (Apache 2.0), Coil (Apache 2.0), Kotlin (Apache 2.0). ML Kit Text Recognition: Google ML Kit Hizmet Şartları.</string>
+</resources>

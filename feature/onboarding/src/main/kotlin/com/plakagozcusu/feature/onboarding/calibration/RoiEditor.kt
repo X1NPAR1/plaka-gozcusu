@@ -14,8 +14,7 @@ data class RoiEditor(
     val canAdd: Boolean get() = points.size < MAX_POINTS
     val isComplete: Boolean get() = points.size >= RegionOfInterest.MIN_POINTS
 
-    fun add(p: PointF): RoiEditor =
-        if (!canAdd) this else copy(points = points + PointF(p.x.coerceIn(0f, 1f), p.y.coerceIn(0f, 1f)))
+    fun add(p: PointF): RoiEditor = if (!canAdd) this else copy(points = points + PointF(p.x.coerceIn(0f, 1f), p.y.coerceIn(0f, 1f)))
 
     fun undo(): RoiEditor = if (canUndo) copy(points = points.dropLast(1)) else this
 

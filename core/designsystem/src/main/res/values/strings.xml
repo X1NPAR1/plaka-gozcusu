@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="status_pending">İşleniyor</string>
+    <string name="status_high_confidence">Yüksek güven</string>
+    <string name="status_needs_review">İnceleme gerekli</string>
+    <string name="status_unreadable">Okunamadı</string>
+    <string name="status_no_plate">Plaka görünmüyor</string>
+    <string name="status_failed">Hata</string>
+    <string name="status_user_verified">Kullanıcı doğruladı</string>
+    <string name="status_user_corrected">Kullanıcı düzeltti</string>
+</resources>

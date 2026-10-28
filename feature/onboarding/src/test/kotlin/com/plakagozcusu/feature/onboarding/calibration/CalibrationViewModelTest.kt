@@ -1,16 +1,21 @@
 package com.plakagozcusu.feature.onboarding.calibration
 
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.viewModelScope
 import com.google.common.truth.Truth.assertThat
 import com.plakagozcusu.core.camera.CameraCapabilities
 import com.plakagozcusu.core.camera.FakeCameraController
 import com.plakagozcusu.core.camera.StillImage
 import com.plakagozcusu.core.common.AppError
 import com.plakagozcusu.core.common.AppResult
+import com.plakagozcusu.core.datastore.SettingsRepository
 import com.plakagozcusu.vision.api.geometry.PointF
 import io.mockk.mockk
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -19,7 +24,10 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
+import java.io.File
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CalibrationViewModelTest {
@@ -45,15 +53,22 @@ class CalibrationViewModelTest {
     private val camera = FakeCameraController(caps)
     private val dispatcher = UnconfinedTestDispatcher()
     private lateinit var viewModel: CalibrationViewModel
+    private lateinit var settings: SettingsRepository
+
+    @get:Rule val tmp = TemporaryFolder()
 
     @Before
     fun setUp() {
         Dispatchers.setMain(dispatcher)
-        viewModel = CalibrationViewModel(camera)
+        val store = PreferenceDataStoreFactory.create { File(tmp.root, "cal.preferences_pb") }
+        settings = SettingsRepository(store)
+        viewModel = CalibrationViewModel(camera, settings)
     }
 
     @After
     fun tearDown() {
+        // Stop the VM's own coroutines (settings load) before the Main dispatcher is reset.
+        viewModel.viewModelScope.cancel()
         Dispatchers.resetMain()
     }
 
@@ -130,6 +145,24 @@ class CalibrationViewModelTest {
                     .pixels
             assertThat(at1x).isEqualTo(152)
             assertThat(at2x).isEqualTo(305)
+        }
+
+    @Test
+    fun `save persists the calibration and completes onboarding`() =
+        runTest(dispatcher) {
+            backgroundScope.launch { viewModel.uiState.collect { } }
+            viewModel.bind(mockk(relaxed = true))
+            listOf(PointF(0.1f, 0.6f), PointF(0.9f, 0.6f), PointF(0.5f, 0.95f)).forEach(viewModel::onPreviewTap)
+            viewModel.onZoom(2f)
+            val saved = CompletableDeferred<Unit>()
+
+            viewModel.save { saved.complete(Unit) }
+
+            saved.await()
+            val s = settings.settings.first()
+            assertThat(s.onboardingDone).isTrue()
+            assertThat(s.calibration.zoomRatio).isEqualTo(2f)
+            assertThat(s.calibration.roiPoints).hasSize(3)
         }
 
     @Test
