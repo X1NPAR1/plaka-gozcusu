@@ -95,3 +95,25 @@ Catalog source: https://www.aitmpl.com/components.json (1,900+ components, filte
   (2) lag: analysis target 960x720, encode scene JPEG only at finalize, preview: bind real CameraX Preview
   while dashboard visible (service rebinds with/without preview), keep analysis-only when UI gone;
   (3) build+release 0.1.2 (versionCode 3), check usage-guard before each step.
+
+## Backlog from user (2026-10-28, after 0.1.3) — do all on resume, without asking
+1. Perf ("kasıyor"): analysis 960x720, encode scene JPEG once at finalize, reuse buffers; real CameraX
+   Preview while dashboard visible (service rebinds), analysis-only when UI gone.
+2. Calibration "Test fotoğrafı çek" → run PlateReader on the still, show parsed result (lets user test with a held plate).
+3. OPT-IN cloud AI plate verification (user decision; overrides ADR-005 only when enabled):
+   - Settings: provider + API key (EncryptedSharedPreferences/Tink-Keystore, never logged), toggle OFF by default,
+     clear KVKK/privacy warning that plate crops leave the device. Free tier candidate: Google Gemini API
+     (verify current free tier + model id at ai.google.dev before coding). Also allow Anthropic key.
+   - Sends ONLY the plate crop + up to 3 candidate readings; asks for JSON {plate, confidence, readable}.
+   - Result stored as separate field (aiPlateText/aiProvider/aiAt), status rules: AI agrees with consensus →
+     HIGH_CONFIDENCE; disagrees → NEEDS_REVIEW with both shown; never overwrite raw OCR. Queue via WorkManager
+     (network constraint), retries, rate limit, per-day cap.
+   - INTERNET permission becomes required in manifest → document in PRIVACY/SECURITY/ADR-010, README.
+4. OCR quality: letter-group confusions (TFT vs TET): add letter-position confusion candidates (E/F, O/D/Q, I/T?)
+   ONLY as alternative votes in consensus, never silent; upscale small plate crops (bicubic 2-3x), contrast/
+   sharpen before OCR; read multiple frames; prefer optical zoom lens; warn when digital zoom > native.
+5. "Self-improving": user corrections stored as labelled pairs (crop + text) in app storage, exportable as a
+   dataset ZIP for future fine-tuning; per-device confusion stats feed consensus priors.
+6. UI/UX full redesign pass: Material 3 icons (material-icons-core), top app bars, consistent spacing/cards,
+   empty states, onboarding visuals, dashboard stat tiles, record list polish, no overlapping controls.
+7. Also: stop monitoring before recalibrate; Baseline Profile; per-ABI APK splits; release each step (0.2.x).
