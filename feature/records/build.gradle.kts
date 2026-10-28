@@ -8,6 +8,7 @@ android {
 
 dependencies {
     implementation(project(":core:data"))
+    implementation(project(":vision:pipeline"))
     implementation(libs.coil.compose)
     testImplementation(libs.mockk)
 }

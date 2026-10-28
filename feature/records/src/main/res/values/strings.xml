@@ -78,4 +78,8 @@
     <string name="ai_err_model">Seçilen model bulunamadı. Ayarlar\u2019dan listeden başka bir model seç. (kod %1$d)</string>
     <string name="ai_err_quota">Ücretsiz kota doldu; bir süre sonra tekrar dene. (kod %1$d)</string>
     <string name="ai_err_other">Yapay zekâ isteği başarısız oldu. (kod %1$d)</string>
+    <string name="review_title">İnceleme</string>
+    <string name="review_learned">Önceki düzeltmelerine göre olası okuma: %1$s</string>
+    <string name="review_confirm">Okuma doğru</string>
+    <string name="review_accept_learned">Bu öneriyi kabul et</string>
 </resources>

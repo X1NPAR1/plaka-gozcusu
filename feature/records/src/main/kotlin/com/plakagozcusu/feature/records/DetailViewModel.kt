@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.plakagozcusu.core.data.ObservationRepository
 import com.plakagozcusu.core.model.EvidenceFile
 import com.plakagozcusu.core.model.Observation
+import com.plakagozcusu.vision.pipeline.plate.CorrectionLearner
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -48,6 +49,25 @@ class DetailViewModel
             val o = observation.value ?: return
             viewModelScope.launch { _integrity.value = repository.verifyEvidence(o) }
         }
+
+        /** Suggestion learned from the user's own past corrections (null when none applies). */
+        private val _learned = MutableStateFlow<String?>(null)
+        val learned: StateFlow<String?> = _learned.asStateFlow()
+
+        init {
+            viewModelScope.launch {
+                val o = repository.get(id) ?: return@launch
+                if (o.recognitionStatus.isUserConfirmed) return@launch
+                val reading = o.plateText ?: o.rawOcrText ?: return@launch
+                _learned.value =
+                    CorrectionLearner(repository.correctionPairs()).suggest(reading)?.takeIf { it != o.plateText }
+            }
+        }
+
+        fun acceptLearned() = mutate { o -> _learned.value?.let { repository.correctPlate(o.id, it) } }
+
+        /** "Okuma doğru": the user confirms the automated reading as is. */
+        fun confirmReading() = mutate { o -> o.plateText?.let { repository.correctPlate(o.id, it) } }
 
         private val _aiState = MutableStateFlow<AiUiState>(AiUiState.Idle)
         val aiState: StateFlow<AiUiState> = _aiState.asStateFlow()

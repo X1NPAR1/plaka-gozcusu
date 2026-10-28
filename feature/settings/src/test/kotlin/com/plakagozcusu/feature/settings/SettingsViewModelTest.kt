@@ -35,7 +35,7 @@ class SettingsViewModelTest {
         Dispatchers.setMain(dispatcher)
         val store = PreferenceDataStoreFactory.create { File(tmp.root, "s.preferences_pb") }
         repo = SettingsRepository(store)
-        vm = SettingsViewModel(repo, SecretStore(store), mockk(relaxed = true))
+        vm = SettingsViewModel(repo, SecretStore(store), mockk(relaxed = true), mockk(relaxed = true))
     }
 
     @After

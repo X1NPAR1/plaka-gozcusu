@@ -35,4 +35,8 @@
     <string name="ai_models_loading">Hesabındaki modeller getiriliyor…</string>
     <string name="ai_models_error">Modeller getirilemedi. Anahtarı ve internet bağlantısını kontrol edip Kaydet\u2019e tekrar bas.</string>
     <string name="ai_models_empty">Bu anahtar için görüntü okuyabilen model bulunamadı.</string>
+    <string name="training_title">Plaka okumayı geliştirme</string>
+    <string name="training_body">Uygulama, plaka düzeltmelerinden bu telefonun tipik okuma hatalarını (ör. PD yerine PO) öğrenir ve sonraki kayıtlarda öneri olarak sunar. Onayladığın veya düzelttiğin plakalar, ileride özel bir Türk plaka modeli eğitmek için veri seti olarak dışa aktarılabilir (yalnızca plaka kırpıntıları ve doğru metinler).</string>
+    <string name="training_export">Eğitim verisini dışa aktar</string>
+    <string name="training_done" tools:ignore="PluralsCandidate">%1$d etiketli plaka dışa aktarıldı.</string>
 </resources>

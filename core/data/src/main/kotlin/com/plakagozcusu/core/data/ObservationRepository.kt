@@ -209,6 +209,11 @@ class ObservationRepository
 
         suspend fun get(id: String): Observation? = dao.get(id)?.toModel()
 
+        suspend fun correctionPairs(): List<Pair<String, String>> = dao.correctionPairs().map { it.automated to it.corrected }
+
+        /** Plate crops the user confirmed or corrected: ground-truth samples for future training. */
+        suspend fun userLabelled(): List<Observation> = dao.userLabelled().map { it.toModel() }
+
         /** Map of evidence kind to integrity check result for the detail screen and export. */
         suspend fun verifyEvidence(observation: Observation): Map<String, Boolean> =
             withContext(dispatchers.io) {

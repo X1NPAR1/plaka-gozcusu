@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to this project are documented here. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.4.5] - 2026-10-28
+### Added
+- Opt-in Google Gemini plate check (0.3.0) with provider → key → model picker (live model list), visible
+  result/errors, automatic fallback when a model is retired (404).
+- Two-pass plate OCR (tight, enhanced, enlarged plate re-read), per-character consensus (TFT/TET).
+- Learning from the user's own corrections (suggestions only) and training-data export (plate crops + labels.csv).
+- Review card: "Okuma doğru" one-tap confirm; in-app image viewer with contrast; date/time overlay and stamped export copy.
+- Smooth real camera preview while the dashboard is visible; stills/analysis follow portrait/landscape.
+- Battery-optimization exemption flow for always-on monitoring; redesigned UI with top bars, icons and stat tiles.
+- Per-ABI APKs (arm64-v8a, armeabi-v7a) plus universal.
+### Not done
+- Baseline Profile: must be generated on a real device; not fabricated.
+
 ## [0.1.1] - 2026-10-28
 ### Fixed
 - Crash on "İzlemeyi başlat" in the minified release (ML Kit components broken by R8; NPE in MlKitPlateReader). Keep rules added; a failing vision SDK now reports "model unavailable" instead of crashing.

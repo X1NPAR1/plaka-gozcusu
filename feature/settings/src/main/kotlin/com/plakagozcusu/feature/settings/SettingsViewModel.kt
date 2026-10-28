@@ -23,6 +23,7 @@ class SettingsViewModel
         private val repository: SettingsRepository,
         private val secrets: SecretStore,
         private val ai: AiService,
+        private val observations: com.plakagozcusu.core.data.ObservationRepository,
     ) : ViewModel() {
         /** Models offered by the provider for the saved key (null = not fetched yet). */
         private val _models = MutableStateFlow<List<String>?>(null)
@@ -33,6 +34,25 @@ class SettingsViewModel
 
         private val _loadingModels = MutableStateFlow(false)
         val loadingModels: StateFlow<Boolean> = _loadingModels.asStateFlow()
+
+        private val _trainingExport = MutableStateFlow<Int?>(null)
+        val trainingExport: StateFlow<Int?> = _trainingExport.asStateFlow()
+
+        /** Writes user-confirmed plate crops + labels.csv to the user-chosen [target]. */
+        fun exportTrainingData(
+            resolver: android.content.ContentResolver,
+            target: android.net.Uri,
+        ) {
+            viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                val labelled = observations.userLabelled()
+                _trainingExport.value =
+                    resolver.openOutputStream(target)?.use { out ->
+                        com.plakagozcusu.core.data.export
+                            .TrainingDataExporter(observations::resolveFile)
+                            .export(labelled, out)
+                    } ?: 0
+            }
+        }
 
         /** Saves the key (if given) and loads the model list with the stored key. */
         fun saveKeyAndLoadModels(newKey: String) {

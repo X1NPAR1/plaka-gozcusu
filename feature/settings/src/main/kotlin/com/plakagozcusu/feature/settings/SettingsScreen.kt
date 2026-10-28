@@ -59,6 +59,7 @@ fun SettingsScreen(
         LoadCard(settings, viewModel)
         StorageCard(settings, viewModel)
         AiCard(settings, viewModel)
+        TrainingCard(viewModel)
         RecognitionCard(settings, viewModel, onRecalibrate)
         PrivacyCard()
         AboutCard(appVersion, modelVersions)
@@ -189,5 +190,22 @@ private fun AboutCard(
         Text(stringResource(R.string.settings_about), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(R.string.settings_versions, appVersion, modelVersions), style = MaterialTheme.typography.bodySmall)
         Text(stringResource(R.string.settings_licenses), style = MaterialTheme.typography.bodySmall)
+    }
+}
+
+@Composable
+private fun TrainingCard(viewModel: SettingsViewModel) {
+    val resolver = androidx.compose.ui.platform.LocalContext.current.contentResolver
+    val done by viewModel.trainingExport.collectAsStateWithLifecycle()
+    val launcher =
+        androidx.activity.compose.rememberLauncherForActivityResult(
+            androidx.activity.result.contract.ActivityResultContracts
+                .CreateDocument("application/zip"),
+        ) { uri -> if (uri != null) viewModel.exportTrainingData(resolver, uri) }
+    PgCard(Modifier.fillMaxWidth()) {
+        Text(stringResource(R.string.training_title), style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.training_body), style = MaterialTheme.typography.bodyMedium)
+        PgSecondaryButton(stringResource(R.string.training_export), { launcher.launch("plaka-egitim-verisi.zip") })
+        done?.let { Text(stringResource(R.string.training_done, it), style = MaterialTheme.typography.bodySmall) }
     }
 }

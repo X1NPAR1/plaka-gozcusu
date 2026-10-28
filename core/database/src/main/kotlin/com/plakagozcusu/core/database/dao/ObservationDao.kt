@@ -109,6 +109,16 @@ interface ObservationDao {
         status: String,
     )
 
+    /** User fixes (automated → corrected) used to learn this installation's typical OCR mistakes. */
+    @Query(
+        "SELECT original_plate_text AS automated, plate_text AS corrected FROM observations " +
+            "WHERE recognition_status = 'USER_CORRECTED' AND original_plate_text IS NOT NULL AND plate_text IS NOT NULL",
+    )
+    suspend fun correctionPairs(): List<CorrectionPair>
+
+    @Query("SELECT * FROM observations WHERE recognition_status IN ('USER_CORRECTED', 'USER_VERIFIED') AND plate_path IS NOT NULL")
+    suspend fun userLabelled(): List<ObservationEntity>
+
     /** Retention path: never deletes a row that became protected after planning. */
     @Query("SELECT * FROM observations WHERE id IN (:ids) AND is_protected = 0")
     suspend fun getUnprotected(ids: List<String>): List<ObservationEntity>
@@ -147,6 +157,11 @@ interface ObservationDao {
     @Query("DELETE FROM diagnostic_events WHERE timestamp < :before")
     suspend fun pruneDiagnostics(before: Long): Int
 }
+
+data class CorrectionPair(
+    val automated: String,
+    val corrected: String,
+)
 
 data class StatusCount(
     val status: String,

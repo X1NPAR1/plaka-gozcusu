@@ -15,8 +15,8 @@ android {
 
     defaultConfig {
         applicationId = "com.plakagozcusu.app"
-        versionCode = 6
-        versionName = "0.3.0"
+        versionCode = 8
+        versionName = "0.4.5"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -35,6 +35,16 @@ android {
             storePassword = signingProps.getProperty("storePassword")
             keyAlias = signingProps.getProperty("keyAlias")
             keyPassword = signingProps.getProperty("keyPassword")
+        }
+    }
+
+    // Smaller downloads: one APK per CPU family plus a universal APK (ML libraries are ~per-ABI native code).
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a", "armeabi-v7a")
+            isUniversalApk = true
         }
     }
 

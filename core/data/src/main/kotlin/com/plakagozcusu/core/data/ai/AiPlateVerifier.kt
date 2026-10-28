@@ -70,11 +70,16 @@ class GeminiPlateVerifier(
         candidates: List<String>,
     ): String {
         val prompt =
-            "This image is a crop of a Turkish vehicle licence plate taken by a home security camera. " +
-                "Read the plate exactly as printed (ignore the blue 'TR' band). On-device OCR candidates: " +
+            "You are an expert reader of Turkish vehicle licence plates. The image is a crop from a home " +
+                "security camera. Turkish civilian plates are: 2-digit province code 01-81, then 1-3 letters, then " +
+                "2-5 digits (1 letter + 4-5 digits, 2 letters + 3-4 digits, 3 letters + 2-3 digits). Letters used: " +
+                "A B C D E F G H I J K L M N O P R S T U V Y Z (never Q, W, X, Ç, Ğ, İ, Ö, Ş, Ü). Ignore the blue " +
+                "'TR' band. Typical OCR mistakes to check carefully: D vs O vs 0, F vs E, T vs L or I, B vs 8, " +
+                "S vs 5, Z vs 2, G vs 6. In the letter group there are never digits; in the number group never " +
+                "letters. On-device OCR candidates: " +
                 (candidates.takeIf { it.isNotEmpty() }?.joinToString(", ") ?: "none") +
                 ". Do not guess characters you cannot see. Answer ONLY with JSON: " +
-                "{\"plate\": \"<province 2 digits> <letters> <digits>\" or null, \"readable\": true|false}"
+                "{\"plate\": \"<province> <letters> <digits>\" or null, \"readable\": true|false}"
         val part = JSONObject().put("text", prompt)
         val image =
             JSONObject().put(

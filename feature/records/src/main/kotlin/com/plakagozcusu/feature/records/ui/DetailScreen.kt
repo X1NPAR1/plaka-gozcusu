@@ -46,6 +46,7 @@ import com.plakagozcusu.core.designsystem.theme.PgTheme
 import com.plakagozcusu.core.designsystem.theme.PlateTextStyle
 import com.plakagozcusu.core.model.EvidenceFile
 import com.plakagozcusu.core.model.Observation
+import com.plakagozcusu.core.model.RecognitionStatus
 import com.plakagozcusu.feature.records.AiUiState
 import com.plakagozcusu.feature.records.DetailViewModel
 import com.plakagozcusu.feature.records.R
@@ -85,6 +86,8 @@ fun DetailScreen(
     ) {
         EvidenceGallery(observation, viewModel::fileOf, open)
         InfoCard(observation, integrity)
+        val learned by viewModel.learned.collectAsStateWithLifecycle()
+        ReviewCard(observation, learned, onConfirm = viewModel::confirmReading, onAcceptLearned = viewModel::acceptLearned)
         val aiState by viewModel.aiState.collectAsStateWithLifecycle()
         AiCard(observation, aiState, onAsk = viewModel::askAi, onAccept = viewModel::acceptAi)
         ExportStatus(export, viewModel::consumeExport)
@@ -290,90 +293,3 @@ private fun EvidenceGallery(
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
-
-@Composable
-private fun AiCard(
-    o: Observation,
-    state: AiUiState,
-    onAsk: () -> Unit,
-    onAccept: () -> Unit,
-) {
-    PgCard(Modifier.fillMaxWidth()) {
-        Text(stringResource(R.string.ai_section), style = MaterialTheme.typography.titleMedium)
-        val ai = o.ai
-        val aiPlate = ai?.plateText
-        when {
-            ai == null -> Text(stringResource(R.string.ai_none), color = MaterialTheme.colorScheme.onSurfaceVariant)
-            aiPlate == null -> Text(stringResource(R.string.ai_unreadable))
-            ai.agreesWithReading -> Text(stringResource(R.string.ai_agrees, aiPlate), color = PgTheme.status.success)
-            else -> Text(stringResource(R.string.ai_differs, aiPlate), color = PgTheme.status.warning, style = PlateTextStyle)
-        }
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm)) {
-            if (aiPlate != null && ai.agreesWithReading.not() && !o.recognitionStatus.isUserConfirmed) {
-                PgSecondaryButton(stringResource(R.string.ai_accept), onAccept)
-            }
-            PgTextButton(stringResource(R.string.ai_ask), onAsk)
-        }
-        AiStatusText(state)
-    }
-}
-
-@Composable
-private fun AiStatusText(state: AiUiState) {
-    val text =
-        when (state) {
-            AiUiState.Idle -> {
-                return
-            }
-
-            AiUiState.Running -> {
-                stringResource(R.string.ai_running)
-            }
-
-            is AiUiState.Finished -> {
-                when (val o = state.outcome) {
-                    is AiCheckOutcome.Done -> {
-                        if (o.plate ==
-                            null
-                        ) {
-                            stringResource(R.string.ai_unreadable)
-                        } else {
-                            stringResource(R.string.ai_done)
-                        }
-                    }
-
-                    AiCheckOutcome.NoKey -> {
-                        stringResource(R.string.ai_err_key_missing)
-                    }
-
-                    AiCheckOutcome.NoImage -> {
-                        stringResource(R.string.ai_err_no_image)
-                    }
-
-                    AiCheckOutcome.UserConfirmed -> {
-                        stringResource(R.string.ai_err_user_confirmed)
-                    }
-
-                    is AiCheckOutcome.Failed -> {
-                        stringResource(aiErrorText(o.code), o.code)
-                    }
-                }
-            }
-        }
-    Text(text, style = MaterialTheme.typography.bodySmall)
-}
-
-private const val HTTP_BAD_REQUEST = 400
-private const val HTTP_UNAUTHORIZED = 401
-private const val HTTP_FORBIDDEN = 403
-private const val HTTP_NOT_FOUND = 404
-private const val HTTP_TOO_MANY = 429
-
-private fun aiErrorText(code: Int): Int =
-    when (code) {
-        -1 -> R.string.ai_err_offline
-        HTTP_BAD_REQUEST, HTTP_UNAUTHORIZED, HTTP_FORBIDDEN -> R.string.ai_err_key
-        HTTP_NOT_FOUND -> R.string.ai_err_model
-        HTTP_TOO_MANY -> R.string.ai_err_quota
-        else -> R.string.ai_err_other
-    }
