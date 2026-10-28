@@ -42,6 +42,8 @@ data class PipelineConfig(
     val capturePolicy: CaptureRateLimiter.Policy,
     /** OCR runs on at most this many tracks per frame (thermal/latency budget). */
     val maxOcrPerFrame: Int = 1,
+    /** Hard cap of OCR calls per track (thermal budget; long-lived tracks). */
+    val maxOcrPerTrack: Int = 40,
     /** Stop OCR on a track once consensus is this strong with enough frames. */
     val strongAgreement: Float = 0.85f,
     val strongFrames: Int = 3,
@@ -124,17 +126,29 @@ class PipelineEngine(
     private val state = HashMap<Long, TrackEvidence>()
     private var pausedUntilMs = Long.MIN_VALUE
 
+    /** Best evidence seen for one reading (per normalized plate text, or the no-plate fallback). */
+    private class Evidence(
+        val score: Float,
+        val frameMs: Long,
+        val scene: ByteArray,
+        val vehicle: ByteArray,
+        val plate: ByteArray?,
+        val raw: String?,
+        val ocrConfidence: Float,
+        val quality: Float,
+    )
+
     private class TrackEvidence {
-        val readings = mutableListOf<PlateObservation>()
+        val readings = ArrayDeque<PlateObservation>()
+        var ocrCalls = 0
         var anyText = false
-        var bestScore = -1f
-        var bestFrameMs = 0L
-        var bestScene: ByteArray? = null
-        var bestVehicle: ByteArray? = null
-        var bestPlate: ByteArray? = null
-        var bestRaw: String? = null
-        var bestOcrConfidence = 0f
-        var bestQuality = 0f
+
+        /** Best frame per distinct valid plate text, so stored crops always match the stored text. */
+        val byText = LinkedHashMap<String, Evidence>()
+
+        /** Largest view of the vehicle, used when no valid plate was ever read. */
+        var fallback: Evidence? = null
+        var fallbackArea = 0f
         var maxDetectionScore = 0f
         var largestHeight = 0f
         var stillRequested = false
@@ -142,18 +156,21 @@ class PipelineEngine(
     }
 
     suspend fun process(frame: AnalysisFrame): FrameResult {
+        val jolted = mutableListOf<TrackOutcome>()
         if (shift.isShift(frame.image)) {
             pausedUntilMs = frame.timeMs + config.sceneShiftCooldownMs
-            // Tracks across a camera jolt are meaningless; drop their in-progress evidence.
-            tracker.flush().forEach { state.remove(it.id) }
+            // Boxes are meaningless across a camera jolt: end every live track now, keeping
+            // whatever evidence was already gathered rather than silently dropping it.
+            val motion = MotionClassifier(frame.image.width, frame.image.height, config.minMotionPxPerSec)
+            jolted += tracker.flush().mapNotNull { finalize(it, motion) }
         }
-        if (frame.timeMs < pausedUntilMs) return FrameResult(emptyList(), emptyList(), null, sceneShift = true)
+        if (frame.timeMs < pausedUntilMs) return FrameResult(emptyList(), jolted, null, sceneShift = true)
 
         val detections = detector.detect(frame.image)
         val expired = tracker.update(frame.timeMs, detections)
         val motion = MotionClassifier(frame.image.width, frame.image.height, config.minMotionPxPerSec)
         val views = mutableListOf<TrackView>()
-        var ocrBudget = config.maxOcrPerFrame
+        val eligible = mutableListOf<Pair<VehicleDetection, TrackEvidence>>()
         var stillFor: Long? = null
         val detById = tracker.active.associateWith { t -> detections.firstOrNull { it.box == t.lastBox } }
 
@@ -163,17 +180,19 @@ class PipelineEngine(
             val moving = motion.motion(track) == MotionStatus.MOVING
             val confirmed = track.state == TrackState.CONFIRMED
             views += TrackView(track.id, track.lastBox, confirmed, moving, inRoi)
-            val eligible = confirmed && moving && inRoi
-            val det = detById[track]?.takeIf { eligible && track.lastSeenMs == frame.timeMs } ?: continue
+            val ok = confirmed && moving && inRoi
+            val det = detById[track]?.takeIf { ok && track.lastSeenMs == frame.timeMs } ?: continue
             ev.everMovingInRoi = true
             ev.maxDetectionScore = maxOf(ev.maxDetectionScore, det.score)
-            if (ocrBudget > 0 && !hasStrongConsensus(ev)) {
-                ocrBudget--
-                readPlate(frame, det, ev)
-            }
+            if (ev.ocrCalls < config.maxOcrPerTrack && !hasStrongConsensus(ev)) eligible += det to ev
             if (stillFor == null && claimStill(track, ev, frame.timeMs)) stillFor = track.id
         }
-        val outcomes = expired.mapNotNull { finalize(it, motion) }
+        // Fair OCR budget: the least-read tracks go first, so a long-lived hard case cannot starve
+        // a second vehicle passing at the same time.
+        for ((det, ev) in eligible.sortedBy { it.second.ocrCalls }.take(config.maxOcrPerFrame)) {
+            readPlate(frame, det, ev)
+        }
+        val outcomes = jolted + expired.mapNotNull { finalize(it, motion) }
         return FrameResult(views, outcomes, stillFor, sceneShift = false)
     }
 
@@ -187,7 +206,7 @@ class PipelineEngine(
     }
 
     private fun hasStrongConsensus(ev: TrackEvidence): Boolean {
-        val c = PlateConsensus.decide(ev.readings)
+        val c = PlateConsensus.decide(ev.readings.toList())
         return c.text != null && c.agreement >= config.strongAgreement && c.supportingFrames >= config.strongFrames
     }
 
@@ -205,10 +224,10 @@ class PipelineEngine(
                 det.box.bottom * img.height,
             )
         val vehicle = img.crop(pxBox)
+        ev.ocrCalls++
         val candidates = reader.read(vehicle)
         if (candidates.isNotEmpty()) ev.anyText = true
-        val frameSize = Size(img.width, img.height)
-        val vehicleEdge = pxBox.touchesEdgeOf(frameSize, EDGE_MARGIN_PX)
+        val vehicleEdge = pxBox.touchesEdgeOf(Size(img.width, img.height), EDGE_MARGIN_PX)
         for (c in candidates) {
             val plateBox =
                 RectF(
@@ -220,24 +239,40 @@ class PipelineEngine(
             val plate = vehicle.crop(plateBox)
             val quality = QualityScorer.score(ImageQuality.measure(plate, vehicleEdge))
             val parse = TurkishPlateParser.parse(c.rawText)
-            ev.readings += PlateObservation(parse, c.confidence, quality)
-            if (parse.normalized != null && quality * c.confidence > ev.bestScore) {
-                ev.bestScore = quality * c.confidence
-                ev.bestFrameMs = frame.timeMs
-                ev.bestScene = encoder.encode(img)
-                ev.bestVehicle = encoder.encode(vehicle)
-                ev.bestPlate = encoder.encode(plate)
-                ev.bestRaw = c.rawText
-                ev.bestOcrConfidence = c.confidence
-                ev.bestQuality = quality
+            ev.readings.addLast(PlateObservation(parse, c.confidence, quality))
+            if (ev.readings.size > MAX_READINGS) ev.readings.removeFirst()
+            val text = parse.normalized?.takeIf { parse.isValidCivilian } ?: continue
+            val score = quality * c.confidence
+            val current = ev.byText[text]
+            if ((current == null && ev.byText.size < MAX_TEXTS) || (current != null && score > current.score)) {
+                ev.byText[text] =
+                    Evidence(
+                        score,
+                        frame.timeMs,
+                        encoder.encode(img),
+                        encoder.encode(vehicle),
+                        encoder.encode(plate),
+                        c.rawText,
+                        c.confidence,
+                        quality,
+                    )
             }
         }
-        if (ev.bestScene == null) {
-            // No usable plate yet: keep the vehicle's best (largest) view as evidence anyway.
-            ev.bestFrameMs = frame.timeMs
-            ev.bestScene = encoder.encode(img)
-            ev.bestVehicle = encoder.encode(vehicle)
-            ev.bestRaw = candidates.maxByOrNull { it.confidence }?.rawText
+        val area = det.box.area
+        if (area > ev.fallbackArea) {
+            ev.fallbackArea = area
+            val raw = candidates.maxByOrNull { it.confidence }
+            ev.fallback =
+                Evidence(
+                    0f,
+                    frame.timeMs,
+                    encoder.encode(img),
+                    encoder.encode(vehicle),
+                    null,
+                    raw?.rawText,
+                    raw?.confidence ?: 0f,
+                    0f,
+                )
         }
     }
 
@@ -268,18 +303,18 @@ class PipelineEngine(
         track: Track,
         motion: MotionClassifier,
     ): TrackOutcome? {
-        val ev = state.remove(track.id) ?: return null
         limiter.forgetTrack(track.id)
-        val scene = ev.bestScene
-        val vehicle = ev.bestVehicle
-        if (!ev.everMovingInRoi || scene == null || vehicle == null) return null
-        val consensus = PlateConsensus.decide(ev.readings)
+        val ev = state.remove(track.id) ?: return null
+        if (!ev.everMovingInRoi) return null
+        val consensus = PlateConsensus.decide(ev.readings.toList())
+        // Evidence, raw OCR, quality and confidence all come from a reading of the consensus text.
+        val chosen = consensus.text?.let { ev.byText[it] } ?: ev.fallback ?: return null
         val status =
             RecognitionDecider.decide(
                 consensus,
                 ev.anyText,
-                ev.bestQuality,
-                ev.bestOcrConfidence,
+                chosen.quality,
+                chosen.ocrConfidence,
                 config.decision,
             )
         return TrackOutcome(
@@ -289,19 +324,19 @@ class PipelineEngine(
                     vehicleClass = track.vehicleClass,
                     motion = motion.motion(track),
                     direction = motion.direction(track),
-                    timing = TrackTiming(track.firstSeenMs, track.lastSeenMs, ev.bestFrameMs),
+                    timing = TrackTiming(track.firstSeenMs, track.lastSeenMs, chosen.frameMs),
                     detectionConfidence = ev.maxDetectionScore,
                 ),
             recognition =
                 RecognitionSummary(
                     status = status,
                     plateText = consensus.formatted,
-                    rawOcrText = ev.bestRaw,
+                    rawOcrText = chosen.raw,
                     perCharConfidence = consensus.perCharConfidence,
-                    plateConfidence = consensus.agreement * ev.bestOcrConfidence,
-                    qualityScore = ev.bestQuality,
+                    plateConfidence = consensus.agreement * chosen.ocrConfidence,
+                    qualityScore = chosen.quality,
                 ),
-            evidence = EvidenceImages(scene, vehicle, ev.bestPlate),
+            evidence = EvidenceImages(chosen.scene, chosen.vehicle, chosen.plate),
             stillRequested = ev.stillRequested,
         )
     }
@@ -309,5 +344,9 @@ class PipelineEngine(
     private companion object {
         const val EDGE_MARGIN_PX = 2f
         const val STILL_GROWTH = 1.05f
+
+        /** Bounds per-track memory for long-lived tracks (traffic jams, creeping buses). */
+        const val MAX_READINGS = 30
+        const val MAX_TEXTS = 4
     }
 }

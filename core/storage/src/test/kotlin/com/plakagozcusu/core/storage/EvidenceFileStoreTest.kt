@@ -57,7 +57,20 @@ class EvidenceFileStoreTest {
         store.write(byteArrayOf(1), captured, "c.jpg").ok()
 
         assertThat(store.listRelativePaths()).containsExactly("2026/10/28/c.jpg")
-        assertThat(store.sweepTempFiles()).isEqualTo(1)
+        val now = System.currentTimeMillis()
+        // A fresh temp file may be a write in progress: kept.
+        assertThat(store.sweepTempFiles(now, olderThanMillis = 60_000)).isEqualTo(0)
+        assertThat(store.sweepTempFiles(now + 120_000, olderThanMillis = 60_000)).isEqualTo(1)
+    }
+
+    @Test
+    fun `an existing evidence file is never overwritten`() {
+        val first = store.write(byteArrayOf(1), captured, "same.jpg").ok()
+
+        val second = store.write(byteArrayOf(2), captured, "same.jpg")
+
+        assertThat(second).isInstanceOf(AppResult.Failure::class.java)
+        assertThat(store.verify(first)).isTrue()
     }
 
     @Test

@@ -118,6 +118,20 @@ class PipelineReplayTest {
         }
 
     @Test
+    fun `stored raw OCR and evidence match the consensus text, not a lone confident outlier`() =
+        runTest {
+            val (outcomes, _) =
+                run(
+                    ScriptedDetector { listOfNotNull(movingCar(it)) },
+                    ScriptedReader { i -> listOf(if (i == 0) "34 AB 128" to 0.99f else "34 AB 123" to 0.9f) },
+                )
+
+            val o = outcomes.single()
+            assertThat(o.recognition.plateText).isEqualTo("34 AB 123")
+            assertThat(o.recognition.rawOcrText).isEqualTo("34 AB 123")
+        }
+
+    @Test
     fun `parked car never produces an observation`() =
         runTest {
             val parked = VehicleDetection(RectF(0.1f, 0.5f, 0.4f, 0.8f), VehicleClass.CAR, 0.9f)
@@ -203,7 +217,7 @@ class PipelineReplayTest {
         }
 
     @Test
-    fun `a camera jolt pauses the pipeline instead of creating events`() =
+    fun `a camera jolt pauses the pipeline and keeps the evidence gathered so far`() =
         runTest {
             val (outcomes, results) =
                 run(
@@ -213,7 +227,12 @@ class PipelineReplayTest {
                     frameAt = { t -> if (t >= 600) frame(shade = 70) else frame() },
                 )
 
-            assertThat(results.any { it.sceneShift }).isTrue()
-            assertThat(outcomes).isEmpty()
+            val joltIndex = results.indexOfFirst { it.sceneShift }
+            assertThat(joltIndex).isAtLeast(0)
+            // The in-progress pass is finalized at the jolt (not silently dropped)...
+            assertThat(results[joltIndex].finalized).hasSize(1)
+            // ...and nothing is tracked while paused.
+            assertThat(results.drop(joltIndex).takeWhile { it.sceneShift }.all { it.tracks.isEmpty() }).isTrue()
+            assertThat(outcomes).hasSize(1)
         }
 }

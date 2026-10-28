@@ -37,6 +37,8 @@ class EvidenceFileStore(
         val temp = File(target.parentFile, "$name$TEMP_SUFFIX")
         return try {
             target.parentFile.mkdirs()
+            // Never overwrite: an existing file belongs to another (or the same, retried) record.
+            if (target.exists()) throw IOException("evidence file already exists")
             FileOutputStream(temp).use { out ->
                 out.write(bytes)
                 out.flush()
@@ -71,11 +73,17 @@ class EvidenceFileStore(
         return !f.exists() || f.delete()
     }
 
-    /** Removes `.tmp` leftovers from interrupted writes; returns how many were deleted. */
-    fun sweepTempFiles(): Int =
+    /**
+     * Removes `.tmp` leftovers from interrupted writes older than [olderThanMillis] (a write in
+     * progress is younger), returns how many were deleted.
+     */
+    fun sweepTempFiles(
+        nowMillis: Long,
+        olderThanMillis: Long,
+    ): Int =
         root
             .walkTopDown()
-            .filter { it.isFile && it.name.endsWith(TEMP_SUFFIX) }
+            .filter { it.isFile && it.name.endsWith(TEMP_SUFFIX) && nowMillis - it.lastModified() > olderThanMillis }
             .count { it.delete() }
 
     /** All stored evidence files (relative paths), for orphan detection against the database. */

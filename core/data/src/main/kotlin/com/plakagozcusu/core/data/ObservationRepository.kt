@@ -8,6 +8,7 @@ import com.plakagozcusu.core.common.TimeSource
 import com.plakagozcusu.core.database.PlakaDatabase
 import com.plakagozcusu.core.database.dao.ObservationDao
 import com.plakagozcusu.core.database.dao.ObservationQueryBuilder
+import com.plakagozcusu.core.database.dao.normalizePlateForSearch
 import com.plakagozcusu.core.database.entity.DiagnosticEventEntity
 import com.plakagozcusu.core.database.entity.SessionEntity
 import com.plakagozcusu.core.model.EvidenceFile
@@ -119,20 +120,36 @@ class ObservationRepository
                 }
             }
 
-        /** Deletes rows and their files. Returns the number of records removed. */
-        suspend fun delete(ids: Collection<String>): Int =
+        /** Deletes rows (user action, protected or not) and their files. Returns rows removed. */
+        suspend fun delete(ids: Collection<String>): Int = deleteRows(ids, onlyUnprotected = false)
+
+        /**
+         * Chunked so huge selections stay under SQLite's bound-variable limit; rows are re-read
+         * inside the transaction so only rows actually deleted lose their files.
+         */
+        private suspend fun deleteRows(
+            ids: Collection<String>,
+            onlyUnprotected: Boolean,
+        ): Int =
             withContext(dispatchers.io) {
-                if (ids.isEmpty()) return@withContext 0
-                val rows = dao.getAll(ids.toList())
-                val removed = db.withTransaction { dao.delete(ids.toList()) }
-                rows.flatMap { it.evidencePaths }.forEach { path -> files.resolve(path).delete() }
+                var removed = 0
+                ids.distinct().chunked(SQL_CHUNK).forEach { chunk ->
+                    val rows =
+                        db.withTransaction {
+                            val targets = if (onlyUnprotected) dao.getUnprotected(chunk) else dao.getAll(chunk)
+                            if (targets.isNotEmpty()) dao.delete(targets.map { it.id })
+                            targets
+                        }
+                    removed += rows.size
+                    rows.flatMap { it.evidencePaths }.forEach { path -> files.resolve(path).delete() }
+                }
                 removed
             }
 
         suspend fun setProtected(
             ids: Collection<String>,
             value: Boolean,
-        ) = dao.setProtected(ids.toList(), value, time.now().toEpochMilli())
+        ) = ids.distinct().chunked(SQL_CHUNK).forEach { dao.setProtected(it, value, time.now().toEpochMilli()) }
 
         suspend fun setStarred(
             id: String,
@@ -144,31 +161,38 @@ class ObservationRepository
             note: String?,
         ) = dao.setNote(id, note?.takeIf { it.isNotBlank() }, time.now().toEpochMilli())
 
-        /** User correction: keeps the first automated value in originalPlateText, never overwrites raw OCR. */
+        /**
+         * User correction. The first *automated* value is kept in originalPlateText (a later
+         * correction never moves a user value there); raw OCR is never touched. Targeted update in
+         * a transaction so concurrent protect/star/note changes are not reverted.
+         */
         suspend fun correctPlate(
             id: String,
             corrected: String,
-        ): AppResult<Unit> {
-            val row = dao.get(id) ?: return AppResult.Failure(AppError.Unexpected())
-            val text = corrected.trim().uppercase(java.util.Locale.ROOT)
-            val status =
-                if (text ==
-                    row.plateText
-                ) {
-                    RecognitionStatus.USER_VERIFIED
-                } else {
-                    RecognitionStatus.USER_CORRECTED
-                }
-            val updated =
-                row.toModel().copy(
-                    plateText = text.ifEmpty { null },
-                    originalPlateText = row.originalPlateText ?: row.plateText,
-                    recognitionStatus = status,
-                    updatedAt = time.now().toEpochMilli(),
+        ): AppResult<Unit> =
+            db.withTransaction {
+                val row = dao.get(id) ?: return@withTransaction AppResult.Failure(AppError.Unexpected())
+                val text = corrected.trim().uppercase(java.util.Locale.ROOT).ifEmpty { null }
+                val wasUser =
+                    row.recognitionStatus == RecognitionStatus.USER_CORRECTED.name ||
+                        row.recognitionStatus == RecognitionStatus.USER_VERIFIED.name
+                val original = if (wasUser) row.originalPlateText else row.originalPlateText ?: row.plateText
+                val status =
+                    if (text != null && text == (original ?: row.plateText)) {
+                        RecognitionStatus.USER_VERIFIED
+                    } else {
+                        RecognitionStatus.USER_CORRECTED
+                    }
+                dao.updatePlate(
+                    id,
+                    text,
+                    normalizePlateForSearch(text),
+                    original,
+                    status.name,
+                    time.now().toEpochMilli(),
                 )
-            dao.upsert(updated.toEntity())
-            return AppResult.Success(Unit)
-        }
+                AppResult.Success(Unit)
+            }
 
         /** Map of evidence kind to integrity check result for the detail screen and export. */
         suspend fun verifyEvidence(observation: Observation): Map<String, Boolean> =
@@ -187,8 +211,8 @@ class ObservationRepository
                 val now = time.now().toEpochMilli()
                 val candidates =
                     dao.retentionRows().map { RetentionCandidate(it.id, it.createdAt, it.totalSize, it.isProtected) }
-                val deleted = delete(RetentionPlanner.plan(candidates, policy, now))
-                val temps = files.sweepTempFiles()
+                val deleted = deleteRows(RetentionPlanner.plan(candidates, policy, now), onlyUnprotected = true)
+                val temps = files.sweepTempFiles(now, ORPHAN_GRACE_MS)
                 val referenced = dao.allEvidencePaths().toSet()
                 // Only old orphans: a file written moments ago may still be waiting for its DB row.
                 val orphans =
@@ -237,6 +261,9 @@ class ObservationRepository
 
         private companion object {
             const val ORPHAN_GRACE_MS = 10 * 60 * 1000L
+
+            /** Below SQLite's historical 999 bound-variable limit. */
+            const val SQL_CHUNK = 500
             const val DIAGNOSTIC_RETENTION_MS = 14L * 24 * 60 * 60 * 1000
         }
     }

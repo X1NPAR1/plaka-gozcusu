@@ -32,16 +32,14 @@ class MlKitPlateReader : PlateReader {
                 vehicleCrop.height,
                 Bitmap.Config.ARGB_8888,
             )
+        // The bitmap is recycled only when ML Kit has finished with it (also if we were cancelled).
         val text =
-            try {
-                suspendCancellableCoroutine { cont ->
-                    recognizer
-                        .process(InputImage.fromBitmap(bitmap, 0))
-                        .addOnSuccessListener { cont.resume(it) }
-                        .addOnFailureListener { cont.resumeWithException(it) }
-                }
-            } finally {
-                bitmap.recycle()
+            suspendCancellableCoroutine { cont ->
+                recognizer
+                    .process(InputImage.fromBitmap(bitmap, 0))
+                    .addOnCompleteListener { bitmap.recycle() }
+                    .addOnSuccessListener { if (cont.isActive) cont.resume(it) }
+                    .addOnFailureListener { if (cont.isActive) cont.resumeWithException(it) }
             }
         return text.textBlocks.flatMap { it.lines }.mapNotNull { it.toCandidate(vehicleCrop) }
     }

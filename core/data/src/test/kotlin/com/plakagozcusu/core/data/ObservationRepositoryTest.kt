@@ -146,6 +146,31 @@ class ObservationRepositoryTest {
         }
 
     @Test
+    fun `a second correction never stores the user value as the automated original`() =
+        runTest {
+            saved(observation("a", plate = null))
+            repo.correctPlate("a", "34 AB 123")
+            repo.correctPlate("a", "34 AB 128")
+
+            val o = repo.query(ObservationQuery()).single()
+            assertThat(o.originalPlateText).isNull()
+            assertThat(o.plateText).isEqualTo("34 AB 128")
+        }
+
+    @Test
+    fun `retention never deletes a record protected after planning and handles huge selections`() =
+        runTest {
+            val day = 24L * 60 * 60 * 1000
+            repeat(1_200) { i -> saved(observation("old$i", at = nowMs - 40 * day)) }
+            repo.setProtected((0 until 600).map { "old$it" }, true)
+
+            val report = repo.runMaintenance(RetentionPolicy(retentionDays = 30, storageCapBytes = Long.MAX_VALUE))
+
+            assertThat(report.deletedRecords).isEqualTo(600)
+            assertThat(repo.query(ObservationQuery()).all { it.isProtected }).isTrue()
+        }
+
+    @Test
     fun `confirming the same text marks it user verified`() =
         runTest {
             saved(observation("a"))

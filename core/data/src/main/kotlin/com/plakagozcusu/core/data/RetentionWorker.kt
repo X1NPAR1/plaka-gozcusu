@@ -30,7 +30,15 @@ class RetentionWorker
         override suspend fun doWork(): Result {
             val s = settings.settings.first()
             val policy = RetentionPolicy(s.retentionDays, s.storageCapMb.toLong() * BYTES_PER_MB)
-            val report = repository.runMaintenance(policy)
+            val report =
+                try {
+                    repository.runMaintenance(policy)
+                } catch (
+                    @Suppress("TooGenericExceptionCaught") e: RuntimeException,
+                ) {
+                    logger.error(stage = "retention", code = "maintenance_failed", throwable = e)
+                    return Result.retry()
+                }
             val code =
                 "done_records_${report.deletedRecords}" +
                     "_tmp_${report.deletedTempFiles}_orphans_${report.deletedOrphans}"
