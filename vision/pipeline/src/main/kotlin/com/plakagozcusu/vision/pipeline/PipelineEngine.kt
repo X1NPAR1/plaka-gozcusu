@@ -308,7 +308,9 @@ class PipelineEngine(
         val ev = state.remove(track.id)?.takeIf { it.everMovingInRoi } ?: return null
         val consensus = PlateConsensus.decide(ev.readings.toList())
         // Evidence, raw OCR, quality and confidence all come from a reading of the consensus text.
-        val chosen = consensus.text?.let { ev.byText[it] } ?: ev.fallback ?: return null
+        // The composed consensus may not equal any single frame; use the best frame of its shape then.
+        val chosen =
+            consensus.text?.let { ev.byText[it] ?: ev.byText.values.maxByOrNull { e -> e.score } } ?: ev.fallback ?: return null
         val status =
             RecognitionDecider.decide(
                 consensus,

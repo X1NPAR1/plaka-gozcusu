@@ -5,6 +5,10 @@ import com.plakagozcusu.vision.pipeline.plate.ConsensusResult
 
 data class DecisionThresholds(
     val minAgreement: Float = 0.7f,
+    /** Every single character must be at least this agreed on for HIGH_CONFIDENCE. */
+    val minCharAgreement: Float = 0.6f,
+    /** A single misread letter (TFT/TET) is tolerated; several disputed positions are not. */
+    val maxDisputedChars: Int = 1,
     val minSupportingFrames: Int = 2,
     val minQuality: Float = 0.7f,
     val minOcrConfidence: Float = 0.7f,
@@ -31,6 +35,8 @@ object RecognitionDecider {
             consensus.anySpecial -> RecognitionStatus.NEEDS_REVIEW
 
             consensus.agreement >= t.minAgreement &&
+                consensus.minCharAgreement >= t.minCharAgreement &&
+                consensus.disputedChars <= t.maxDisputedChars &&
                 consensus.supportingFrames >= t.minSupportingFrames &&
                 bestQuality >= t.minQuality &&
                 bestOcrConfidence >= t.minOcrConfidence -> RecognitionStatus.HIGH_CONFIDENCE

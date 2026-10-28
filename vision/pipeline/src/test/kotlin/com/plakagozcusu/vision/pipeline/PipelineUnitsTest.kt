@@ -35,10 +35,27 @@ class PipelineUnitsTest {
         val c = PlateConsensus.decide(listOf(obs("34 AB 123"), obs("34 AB 123"), obs("34 AB 128", conf = 0.5f)))
 
         assertThat(c.text).isEqualTo("34AB123")
-        assertThat(c.supportingFrames).isEqualTo(2)
+        // All three readings share the plate shape, so all of them vote.
+        assertThat(c.supportingFrames).isEqualTo(3)
         assertThat(c.agreement).isGreaterThan(0.7f)
         assertThat(c.perCharConfidence!!.last()).isLessThan(1f)
         assertThat(c.perCharConfidence.first()).isEqualTo(1f)
+    }
+
+    @Test
+    fun `a letter misread in one frame does not split the vote`() {
+        val c = PlateConsensus.decide(listOf(obs("34 TFT 123"), obs("34 TFT 123"), obs("34 TET 123")))
+
+        assertThat(c.formatted).isEqualTo("34 TFT 123")
+        assertThat(c.minCharAgreement).isWithin(0.01f).of(2f / 3f)
+        assertThat(RecognitionDecider.decide(c, true, 0.8f, 0.9f, DecisionThresholds())).isEqualTo(RecognitionStatus.HIGH_CONFIDENCE)
+    }
+
+    @Test
+    fun `an evenly disputed letter stays in review`() {
+        val c = PlateConsensus.decide(listOf(obs("34 TFT 123"), obs("34 TET 123")))
+
+        assertThat(RecognitionDecider.decide(c, true, 0.8f, 0.9f, DecisionThresholds())).isEqualTo(RecognitionStatus.NEEDS_REVIEW)
     }
 
     @Test
