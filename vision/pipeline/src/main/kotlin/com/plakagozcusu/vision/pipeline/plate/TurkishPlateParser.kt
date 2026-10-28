@@ -36,6 +36,7 @@ object TurkishPlateParser {
     private const val PROVINCE_MAX = 81
     private const val PROVINCE_LEN = 2
     private const val MAX_LETTERS = 3
+    private const val MAX_PREFIX_SKIP = 3
     private val BOUNDARY_CONFUSABLE = setOf('O', 'I')
 
     /** Letter-count → allowed digit-group lengths. */
@@ -52,7 +53,14 @@ object TurkishPlateParser {
 
     fun parse(raw: String): PlateParse {
         val cleaned = raw.uppercase(Locale.ROOT).filter { it.isLetterOrDigit() }
-        val readings = candidateReadings(cleaned).distinctBy { it.normalized }
+        // OCR often merges the blue-band "TR" or frame noise into the line ("TR 34 ABC 123"); try the
+        // text from each digit-like start so the plate itself is still found. Characters are never added.
+        val readings =
+            cleaned.indices
+                .filter { i -> cleaned[i].isDigit() || (cleaned[i] in DIGIT_CONFUSIONS && i > 0) }
+                .let { starts -> listOf(0) + starts.filter { it > 0 }.take(MAX_PREFIX_SKIP) }
+                .flatMap { start -> candidateReadings(cleaned.substring(start)) }
+                .distinctBy { it.normalized }
         val minFixes = readings.minOfOrNull { it.fixes }
         val best = readings.filter { it.fixes == minFixes }
         val chosen = best.singleOrNull()

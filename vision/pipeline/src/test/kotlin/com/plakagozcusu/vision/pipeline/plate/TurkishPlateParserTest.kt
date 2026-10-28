@@ -97,6 +97,14 @@ class TurkishPlateParserTest {
     }
 
     @Test
+    fun `blue band TR merged into the line is skipped`() {
+        listOf("TR 34 ABC 123", "TR34ABC123", "tr 34 abc 123").forEach {
+            assertThat(p(it).formatted).isEqualTo("34 ABC 123")
+            assertThat(p(it).isValidCivilian).isTrue()
+        }
+    }
+
+    @Test
     fun `garbage and empty strings never produce a plate`() {
         listOf("", "TR", "STOP", "34", "????").forEach { assertThat(p(it).normalized).isNull() }
     }
