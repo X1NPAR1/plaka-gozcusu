@@ -39,6 +39,6 @@ Style decision: max line length 140 (ktlint + detekt) to avoid noisy wrapping of
 
 ## Phases 10–11 (2026-10-28)
 `./gradlew spotlessCheck detekt lint testDebugUnitTest test assembleDebug assembleRelease` → BUILD SUCCESSFUL.
-Unit tests total=138 passed=138 failed=0 skipped=0. Release APK: 71,300,098 bytes, signed (apksigner verify: v2 OK),
-SHA-256 bd309ffd1002e544c5b089f88ebf9871b0deec88481c55e8e87aa44c449fdb98 (build before final doc commit).
+Unit tests total=138 passed=138 failed=0 skipped=0. Release APK (after audit fixes): 71,463,938 bytes, signed (apksigner verify: v2 OK),
+SHA-256 bd309ffd1002e544c5b089f88ebf9871b0deec88481c55e8e87aa44c449fdb98 — published as GitHub release v0.1.0.
 Minified release has not been run on a device (R8 runtime issues would only show there).

@@ -11,3 +11,10 @@ See `docs/ARCHITECTURE.md`, `docs/PROJECT_PLAN.md`, `docs/PROGRESS.md`.
 gradlew.bat assembleDebug
 ```
 Requires JDK 21 and Android SDK (platform 36). Set `sdk.dir` in `local.properties`.
+
+## Lisans / License
+Kaynak kod **Apache License 2.0** ile lisanslanmıştır (`LICENSE`). Paketlenen EfficientDet-Lite0 modeli Apache 2.0
+(TensorFlow), ML Kit Text Recognition ise Google ML Kit Hizmet Şartları kapsamındadır (`docs/MODEL_CARD.md`).
+
+## İndirme
+Hazır APK: GitHub Releases → `v0.1.0`. Kurulum: `docs/DEVICE_SETUP.md`.
