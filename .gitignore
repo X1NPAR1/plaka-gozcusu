@@ -42,3 +42,4 @@ device-logs/
 hs_err_pid*.log
 replay_pid*.log
 .claude/skills/usage-guard/usage-log.txt
+.kotlin/

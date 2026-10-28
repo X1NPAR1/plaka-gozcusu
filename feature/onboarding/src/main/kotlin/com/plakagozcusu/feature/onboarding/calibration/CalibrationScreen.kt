@@ -8,6 +8,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -230,9 +231,9 @@ private fun RoiControls(
     onUndo: () -> Unit,
     onClear: () -> Unit,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    FlowRow(
         horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm),
     ) {
         PgStatusPill(
             stringResource(R.string.calibration_roi_points, roi.points.size),

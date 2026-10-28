@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -77,13 +78,19 @@ fun IncidentScreen(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm),
+            verticalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm),
+        ) {
             AssistChip(onClick = { viewModel.presetLastHours(1) }, label = { Text(stringResource(R.string.preset_last_hour)) })
             AssistChip(onClick = { viewModel.presetLastHours(HOURS_PER_DAY) }, label = { Text(stringResource(R.string.preset_last_day)) })
             AssistChip(onClick = { viewModel.presetDay(0) }, label = { Text(stringResource(R.string.preset_today)) })
             AssistChip(onClick = { viewModel.presetDay(1) }, label = { Text(stringResource(R.string.preset_yesterday)) })
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm),
+            verticalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm),
+        ) {
             PgSecondaryButton(DATE.format(window.date), onClick = { picker = Picker.DATE })
             PgSecondaryButton(HM.format(window.from), onClick = { picker = Picker.FROM })
             PgSecondaryButton(HM.format(window.to), onClick = { picker = Picker.TO })
@@ -91,7 +98,10 @@ fun IncidentScreen(
         records?.let { list ->
             Text(stringResource(R.string.incident_count, list.size), style = MaterialTheme.typography.titleMedium)
             if (list.isNotEmpty()) {
-                Row(horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm),
+                ) {
                     PgSecondaryButton(stringResource(R.string.incident_protect_all), onClick = viewModel::protectAll)
                     PgPrimaryButton(stringResource(R.string.incident_export_all), onClick = { exportLauncher.launch(exportFileName()) })
                 }

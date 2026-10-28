@@ -9,6 +9,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -256,7 +257,10 @@ private fun ActionRows(
     onDialog: (Dialog) -> Unit,
     onExport: () -> Unit,
 ) {
-    Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm)) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm),
+    ) {
         PgSecondaryButton(
             stringResource(if (observation.isProtected) R.string.action_unprotect else R.string.action_protect),
             viewModel::toggleProtected,
@@ -268,7 +272,10 @@ private fun ActionRows(
         PgSecondaryButton(stringResource(R.string.detail_correct), { onDialog(Dialog.CORRECT) })
         PgSecondaryButton(stringResource(R.string.detail_note), { onDialog(Dialog.NOTE) })
     }
-    Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm)) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm),
+    ) {
         PgSecondaryButton(stringResource(R.string.detail_verify), viewModel::verify)
         PgSecondaryButton(stringResource(R.string.action_export), onExport)
         PgTextButton(stringResource(R.string.action_delete), { onDialog(Dialog.DELETE) })
