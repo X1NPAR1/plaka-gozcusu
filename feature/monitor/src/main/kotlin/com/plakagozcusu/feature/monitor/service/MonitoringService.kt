@@ -89,6 +89,10 @@ class MonitoringService : LifecycleService() {
     )
 
     private var context: SessionContext? = null
+
+    /** Keeps the CPU running with the screen off while a session is active. */
+    private val wakeLock by lazy { SessionWakeLock(this) }
+    private var lastPreviewMs = 0L
     private val stats = SessionStatsCounter()
 
     override fun onCreate() {
@@ -123,6 +127,7 @@ class MonitoringService : LifecycleService() {
 
     private suspend fun runSession() {
         val settings = settingsRepository.settings.first()
+        wakeLock.renew()
         val sessionId = UUID.randomUUID().toString()
         val anchor = ClockAnchor(time.now().toEpochMilli(), SystemClock.elapsedRealtime())
         val scheduler = FrameScheduler(settings.analysisLoad)
@@ -135,7 +140,7 @@ class MonitoringService : LifecycleService() {
         val ctx = SessionContext(sessionId, anchor, linker, settings) { result -> onFrameResult(result) }
         context = ctx
         val analyzer = SessionAnalyzer(built, scheduler, watchdog, ctx.handler)
-        if (camera.bind(this, CameraConfig(withPreview = true), analyzer) is AppResult.Failure) {
+        if (camera.bind(this, CameraConfig(withPreview = false), analyzer) is AppResult.Failure) {
             fail(AppError.CameraUnavailable())
             return
         }
@@ -175,9 +180,13 @@ class MonitoringService : LifecycleService() {
                             ),
                     ),
             )
-        } catch (e: java.io.IOException) {
+        } catch (
+            // Missing/corrupt model (IOException) or an SDK that fails to initialise (e.g. ML Kit):
+            // report as "model unavailable" instead of crashing the service.
+            @Suppress("TooGenericExceptionCaught") e: Exception,
+        ) {
             logger.error(stage = "models", code = "model_unavailable", throwable = e)
-            fail(AppError.ModelUnavailable("efficientdet", e))
+            fail(AppError.ModelUnavailable("vision", e))
             null
         }
 
@@ -208,6 +217,7 @@ class MonitoringService : LifecycleService() {
     ) {
         while (lifecycleScope.isActive && controller.state.value !is MonitoringState.Idle) {
             delay(SUPERVISE_INTERVAL_MS)
+            wakeLock.renew()
             controller.dispatch(MonitoringEvent.StatsUpdated(stats.snapshot()))
             notifications.notifyOngoing(controller.state.value)
             val running = controller.state.value is MonitoringState.Running
@@ -227,7 +237,7 @@ class MonitoringService : LifecycleService() {
         camera.unbind()
         camera.bind(
             this,
-            CameraConfig(withPreview = true),
+            CameraConfig(withPreview = false),
             SessionAnalyzer(engine, FrameScheduler(settings.analysisLoad), watchdog, handler),
         )
         applyCalibration(settings)
@@ -305,6 +315,8 @@ class MonitoringService : LifecycleService() {
         val running = controller.state.value
         thermal?.stop()
         thermal = null
+        wakeLock.release()
+        controller.publishPreview(null)
         camera.unbind()
         session?.cancel()
         val e = engine
@@ -335,6 +347,7 @@ class MonitoringService : LifecycleService() {
     }
 
     override fun onDestroy() {
+        wakeLock.release()
         thermal?.stop()
         super.onDestroy()
     }
@@ -360,6 +373,10 @@ class MonitoringService : LifecycleService() {
                 return
             }
             val image = FrameConverter.toUpright(frame)
+            if (now - lastPreviewMs >= PREVIEW_INTERVAL_MS) {
+                lastPreviewMs = now
+                controller.publishPreview(image.toPreviewBitmap(PREVIEW_WIDTH))
+            }
             // The pipeline is suspend only for ML Kit's callback; blocking here is intended: this is
             // the dedicated analysis thread and CameraX drops frames while we work.
             val result = runBlocking { engine.process(AnalysisFrame(now, image)) }
@@ -406,6 +423,8 @@ class MonitoringService : LifecycleService() {
     companion object {
         const val ACTION_STOP = "com.plakagozcusu.action.STOP_MONITORING"
         private const val STALL_TIMEOUT_MS = 10_000L
+        private const val PREVIEW_INTERVAL_MS = 300L
+        private const val PREVIEW_WIDTH = 480
         private const val SUPERVISE_INTERVAL_MS = 2_000L
         private const val MS_PER_S = 1_000L
         private const val STILL_COOLDOWN_MS = 1_500L

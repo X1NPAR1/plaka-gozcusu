@@ -42,3 +42,9 @@ Style decision: max line length 140 (ktlint + detekt) to avoid noisy wrapping of
 Unit tests total=138 passed=138 failed=0 skipped=0. Release APK (after audit fixes): 71,463,938 bytes, signed (apksigner verify: v2 OK),
 SHA-256 bd309ffd1002e544c5b089f88ebf9871b0deec88481c55e8e87aa44c449fdb98 — published as GitHub release v0.1.0.
 Minified release has not been run on a device (R8 runtime issues would only show there).
+
+## 0.1.1 hotfix (2026-10-28)
+User report: NullPointerException in MlKitPlateReader.<init> (R8-renamed ML Kit internals) when starting monitoring.
+Retraced with mapping.txt; fixed with ML Kit keep rules (verified: com.google.mlkit.vision.text.internal.zzo/zzp now unrenamed
+in mapping.txt). Full verify → BUILD SUCCESSFUL, 138/138 tests. Release APK signed (v2), SHA-256 a407d4bcc384eea7dcad7abe2f271e11f590c76c13753dbd3c2c9441987a6fa3.
+Not yet re-tested on the device.

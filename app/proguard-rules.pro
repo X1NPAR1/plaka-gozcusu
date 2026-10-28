@@ -6,3 +6,12 @@
 -keep class org.tensorflow.lite.** { *; }
 -keep class com.google.ai.edge.litert.** { *; }
 -dontwarn org.tensorflow.lite.**
+
+# ML Kit resolves its components (registrars, factories) by class at runtime; R8 class merging /
+# renaming broke that in 0.1.0 (NPE in MlKitPlateReader.<init> on "İzlemeyi başlat").
+-keep class com.google.mlkit.** { *; }
+-keep class com.google.android.gms.internal.mlkit_vision_text_common.** { *; }
+-keep class com.google.android.gms.internal.mlkit_vision_common.** { *; }
+-keep class com.google.android.gms.internal.mlkit_common.** { *; }
+-keep class com.google.firebase.components.** { *; }
+-dontwarn com.google.mlkit.**

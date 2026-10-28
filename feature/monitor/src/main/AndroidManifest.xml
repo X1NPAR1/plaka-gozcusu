@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Partial wake lock: keeps analysing with the screen off while a session runs. -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application>
         <!-- Camera FGS: only started from a visible UI by the user (ADR-006). -->

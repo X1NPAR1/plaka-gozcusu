@@ -3,6 +3,7 @@ package com.plakagozcusu.feature.monitor.service
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import androidx.camera.core.ImageProxy
+import androidx.core.graphics.scale
 import com.plakagozcusu.vision.api.ImageBuffer
 import com.plakagozcusu.vision.pipeline.ImageEncoder
 import java.io.ByteArrayOutputStream
@@ -37,6 +38,15 @@ internal object FrameConverter {
         raw.recycle()
         return buffer
     }
+}
+
+/** Downscaled copy of an analysis frame for the in-app live view. */
+internal fun ImageBuffer.toPreviewBitmap(maxWidth: Int): Bitmap {
+    val full = Bitmap.createBitmap(argb, width, height, Bitmap.Config.ARGB_8888)
+    if (width <= maxWidth) return full
+    val scaled = full.scale(maxWidth, height * maxWidth / width)
+    full.recycle()
+    return scaled
 }
 
 /** JPEG encoder for derived evidence (crops, analysis-frame fallbacks). Originals stay untouched. */

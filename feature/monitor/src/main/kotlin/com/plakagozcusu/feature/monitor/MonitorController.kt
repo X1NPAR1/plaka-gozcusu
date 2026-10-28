@@ -2,6 +2,7 @@ package com.plakagozcusu.feature.monitor
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import androidx.core.content.ContextCompat
 import com.plakagozcusu.feature.monitor.service.MonitoringService
 import com.plakagozcusu.feature.monitor.session.MonitoringEvent
@@ -34,6 +35,17 @@ class MonitorController
 
         internal fun publishOverlay(tracks: List<TrackView>) {
             _overlay.value = tracks
+        }
+
+        /**
+         * Small preview made from analysis frames. The service binds no CameraX Preview, so
+         * monitoring never depends on a visible surface (screen off / app in background).
+         */
+        private val _preview = MutableStateFlow<Bitmap?>(null)
+        val preview: StateFlow<Bitmap?> = _preview.asStateFlow()
+
+        internal fun publishPreview(bitmap: Bitmap?) {
+            _preview.value = bitmap
         }
 
         fun start(context: Context) {
