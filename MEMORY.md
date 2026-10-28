@@ -117,3 +117,6 @@ Catalog source: https://www.aitmpl.com/components.json (1,900+ components, filte
 6. UI/UX full redesign pass: Material 3 icons (material-icons-core), top app bars, consistent spacing/cards,
    empty states, onboarding visuals, dashboard stat tiles, record list polish, no overlapping controls.
 7. Also: stop monitoring before recalibrate; Baseline Profile; per-ABI APK splits; release each step (0.2.x).
+8. Plate reading/zoom/review UX (user, 2026-10-28): auto-zoom ROI crop around the vehicle/plate region from the
+   full-res still (not digital camera zoom); plate crop viewer with pinch-zoom + contrast toggle; side-by-side
+   frames of the pass for manual review; review queue screen for NEEDS_REVIEW with one-tap confirm/correct.
