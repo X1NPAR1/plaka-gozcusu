@@ -127,11 +127,18 @@ class PipelineEngine(
     private val state = HashMap<Long, TrackEvidence>()
     private var pausedUntilMs = Long.MIN_VALUE
 
+    // Raw (not yet encoded) evidence images; JPEG encoding happens once, at finalize.
+    private class RawImages(
+        val scene: ImageBuffer,
+        val vehicle: ImageBuffer,
+        val plate: ImageBuffer?,
+    )
+
     /** Best evidence seen for one reading (per normalized plate text, or the no-plate fallback). */
     private class Evidence(
         val score: Float,
         val frameMs: Long,
-        val images: EvidenceImages,
+        val images: RawImages,
         val raw: String?,
         val ocrConfidence: Float,
         val quality: Float,
@@ -232,7 +239,7 @@ class PipelineEngine(
         if (area > ev.fallbackArea) {
             ev.fallbackArea = area
             val raw = candidates.maxByOrNull { it.confidence }
-            val images = EvidenceImages(encoder.encode(img), encoder.encode(vehicle), null)
+            val images = RawImages(img, vehicle, null)
             ev.fallback = Evidence(0f, frame.timeMs, images, raw?.rawText, raw?.confidence ?: 0f, 0f)
         }
     }
@@ -259,7 +266,7 @@ class PipelineEngine(
         val text = parse.normalized?.takeIf { parse.isValidCivilian } ?: return
         val score = quality * c.confidence
         if (shouldReplace(ev.byText[text], score, ev.byText.size)) {
-            val images = EvidenceImages(encoder.encode(frame.image), encoder.encode(vehicle), encoder.encode(plate))
+            val images = RawImages(frame.image, vehicle, plate)
             ev.byText[text] = Evidence(score, frame.timeMs, images, c.rawText, c.confidence, quality)
         }
     }
@@ -329,10 +336,17 @@ class PipelineEngine(
                     plateConfidence = consensus.agreement * chosen.ocrConfidence,
                     qualityScore = chosen.quality,
                 ),
-            evidence = chosen.images,
+            evidence = encode(chosen.images),
             stillRequested = ev.stillRequested,
         )
     }
+
+    private fun encode(raw: RawImages) =
+        EvidenceImages(
+            sceneJpeg = encoder.encode(raw.scene),
+            vehicleCropJpeg = encoder.encode(raw.vehicle),
+            plateCropJpeg = raw.plate?.let(encoder::encode),
+        )
 
     private companion object {
         const val EDGE_MARGIN_PX = 2f
@@ -340,6 +354,6 @@ class PipelineEngine(
 
         /** Bounds per-track memory for long-lived tracks (traffic jams, creeping buses). */
         const val MAX_READINGS = 30
-        const val MAX_TEXTS = 4
+        const val MAX_TEXTS = 3
     }
 }

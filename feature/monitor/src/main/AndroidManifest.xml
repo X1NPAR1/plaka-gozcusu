@@ -12,6 +12,9 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Partial wake lock: keeps analysing with the screen off while a session runs. -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Lets the user exempt the app from Doze with one system dialog so a running session is not
+         throttled with the screen off (user requirement: always-on monitoring once started). -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application>
         <!-- Camera FGS: only started from a visible UI by the user (ADR-006). -->

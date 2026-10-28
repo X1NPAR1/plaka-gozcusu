@@ -44,6 +44,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.plakagozcusu.core.common.AppError
@@ -73,7 +74,17 @@ fun DashboardScreen(
     val latest by viewModel.latest.collectAsStateWithLifecycle()
     val used by viewModel.usedBytes.collectAsStateWithLifecycle()
     var dimmed by remember { mutableStateOf(false) }
-    val notifLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { viewModel.start() }
+    val context = LocalContext.current
+    var exempt by remember { mutableStateOf(BatteryOptimization.isExempt(context)) }
+    LifecycleResumeEffect(Unit) {
+        exempt = BatteryOptimization.isExempt(context)
+        onPauseOrDispose { }
+    }
+    val notifLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+            viewModel.start()
+            BatteryOptimization.request(context)
+        }
     val active = state !is MonitoringState.Idle && state !is MonitoringState.Failed
 
     if (dimmed && active) {
@@ -104,11 +115,13 @@ fun DashboardScreen(
                         notifLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                     } else {
                         viewModel.start()
+                        BatteryOptimization.request(context)
                     }
                 })
                 PgSecondaryButton(stringResource(R.string.monitor_calibrate), onCalibrate)
             }
         }
+        if (!exempt) BackgroundCard(onFix = { BatteryOptimization.request(context) })
         TodayCard(today, used, viewModel.freeBytes)
         LatestCard(latest, viewModel, onOpenRecord)
     }
@@ -279,5 +292,14 @@ private fun DimScreen(
             StatusLine(state)
             Text(stringResource(R.string.dim_hint), color = Color.Gray, style = MaterialTheme.typography.bodySmall)
         }
+    }
+}
+
+@Composable
+private fun BackgroundCard(onFix: () -> Unit) {
+    PgCard(Modifier.fillMaxWidth()) {
+        Text(stringResource(R.string.background_title), style = MaterialTheme.typography.titleMedium, color = PgTheme.status.warning)
+        Text(stringResource(R.string.background_body), style = MaterialTheme.typography.bodyMedium)
+        PgPrimaryButton(stringResource(R.string.background_fix), onFix)
     }
 }

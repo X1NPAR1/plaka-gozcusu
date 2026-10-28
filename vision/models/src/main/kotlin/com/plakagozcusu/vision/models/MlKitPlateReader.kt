@@ -1,6 +1,7 @@
 package com.plakagozcusu.vision.models
 
 import android.graphics.Bitmap
+import androidx.core.graphics.scale
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
@@ -25,13 +26,16 @@ class MlKitPlateReader : PlateReader {
     private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
     override suspend fun read(vehicleCrop: ImageBuffer): List<PlateCandidate> {
+        val source = Bitmap.createBitmap(vehicleCrop.argb, vehicleCrop.width, vehicleCrop.height, Bitmap.Config.ARGB_8888)
+        // Distant vehicles give small crops whose plate characters are only a few pixels tall; ML Kit
+        // reads markedly better after a smooth upscale. Boxes stay normalized, so callers are unaffected.
+        val factor = upscaleFactor(vehicleCrop.width)
         val bitmap =
-            Bitmap.createBitmap(
-                vehicleCrop.argb,
-                vehicleCrop.width,
-                vehicleCrop.height,
-                Bitmap.Config.ARGB_8888,
-            )
+            if (factor > 1) {
+                source.scale(vehicleCrop.width * factor, vehicleCrop.height * factor).also { source.recycle() }
+            } else {
+                source
+            }
         // The bitmap is recycled only when ML Kit has finished with it (also if we were cancelled).
         val text =
             suspendCancellableCoroutine { cont ->
@@ -41,20 +45,23 @@ class MlKitPlateReader : PlateReader {
                     .addOnSuccessListener { if (cont.isActive) cont.resume(it) }
                     .addOnFailureListener { if (cont.isActive) cont.resumeWithException(it) }
             }
-        return text.textBlocks.flatMap { it.lines }.mapNotNull { it.toCandidate(vehicleCrop) }
+        return text.textBlocks.flatMap { it.lines }.mapNotNull { it.toCandidate(vehicleCrop, factor) }
     }
 
-    private fun Text.Line.toCandidate(crop: ImageBuffer): PlateCandidate? {
+    private fun Text.Line.toCandidate(
+        crop: ImageBuffer,
+        scale: Int,
+    ): PlateCandidate? {
         val r = boundingBox ?: return null
         val symbols = elements.flatMap { it.symbols }
         return PlateCandidate(
             rawText = text,
             box =
                 RectF(
-                    r.left.toFloat() / crop.width,
-                    r.top.toFloat() / crop.height,
-                    r.right.toFloat() / crop.width,
-                    r.bottom.toFloat() / crop.height,
+                    r.left.toFloat() / (crop.width * scale),
+                    r.top.toFloat() / (crop.height * scale),
+                    r.right.toFloat() / (crop.width * scale),
+                    r.bottom.toFloat() / (crop.height * scale),
                 ),
             confidence = confidence,
             perCharConfidence = symbols.map { it.confidence }.takeIf { it.isNotEmpty() },
@@ -62,4 +69,18 @@ class MlKitPlateReader : PlateReader {
     }
 
     override fun close() = recognizer.close()
+
+    private fun upscaleFactor(width: Int): Int =
+        when {
+            width < SMALL_CROP_PX -> SMALL_UPSCALE
+            width < MEDIUM_CROP_PX -> MEDIUM_UPSCALE
+            else -> 1
+        }
+
+    private companion object {
+        const val SMALL_CROP_PX = 320
+        const val MEDIUM_CROP_PX = 720
+        const val SMALL_UPSCALE = 3
+        const val MEDIUM_UPSCALE = 2
+    }
 }

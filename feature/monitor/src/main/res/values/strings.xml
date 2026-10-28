@@ -31,4 +31,7 @@
     <string name="loading">Yükleniyor…</string>
     <string name="plate_unknown">Plaka okunamadı</string>
     <string name="dim_hint">İzleme sürüyor. Ekrana dokunarak geri dön.</string>
+    <string name="background_title">Ekran kapalıyken kesintisiz izleme</string>
+    <string name="background_body">Android pil tasarrufu, ekran kapalıyken izlemeyi yavaşlatabilir veya durdurabilir. Uygulamanın arka planda kısıtlanmadan çalışmasına izin ver. Samsung, Xiaomi, Huawei gibi telefonlarda ayrıca kurulum kılavuzundaki üretici ayarlarını yap.</string>
+    <string name="background_fix">Arka planda çalışmaya izin ver</string>
 </resources>
