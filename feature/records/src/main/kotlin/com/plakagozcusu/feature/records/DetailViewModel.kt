@@ -22,6 +22,7 @@ import javax.inject.Inject
 class DetailViewModel
     @Inject
     constructor(
+        @param:dagger.hilt.android.qualifiers.ApplicationContext private val app: android.content.Context,
         savedState: SavedStateHandle,
         private val repository: ObservationRepository,
         private val actions: RecordActions,
@@ -47,6 +48,16 @@ class DetailViewModel
             val o = observation.value ?: return
             viewModelScope.launch { _integrity.value = repository.verifyEvidence(o) }
         }
+
+        /** Queues the optional AI check (no-op inside the worker if disabled or no key). */
+        fun askAi() =
+            mutate {
+                com.plakagozcusu.core.data.ai.AiVerifyWorker
+                    .enqueue(app, it.id)
+            }
+
+        /** Accepting the AI suggestion is a user decision: stored as a user correction/verification. */
+        fun acceptAi() = mutate { o -> o.ai?.plateText?.let { repository.correctPlate(o.id, it) } }
 
         fun toggleProtected() = mutate { repository.setProtected(listOf(it.id), !it.isProtected) }
 

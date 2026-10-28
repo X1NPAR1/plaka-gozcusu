@@ -1,0 +1,426 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "79134c2b7af16db02d5792f7cc7bccd2",
+    "entities": [
+      {
+        "tableName": "observations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `session_id` TEXT NOT NULL, `track_id` INTEGER NOT NULL, `plate_text` TEXT, `original_plate_text` TEXT, `plate_search` TEXT, `raw_ocr_text` TEXT, `per_char_confidence` TEXT, `plate_confidence` REAL NOT NULL, `detection_confidence` REAL NOT NULL, `quality_score` REAL NOT NULL, `recognition_status` TEXT NOT NULL, `motion_status` TEXT NOT NULL, `direction` TEXT NOT NULL, `vehicle_class` TEXT NOT NULL, `first_seen_at` INTEGER NOT NULL, `best_frame_at` INTEGER NOT NULL, `last_seen_at` INTEGER NOT NULL, `zone_id` TEXT NOT NULL, `scene_path` TEXT, `scene_sha256` TEXT, `scene_size` INTEGER, `vehicle_path` TEXT, `vehicle_sha256` TEXT, `vehicle_size` INTEGER, `plate_path` TEXT, `plate_sha256` TEXT, `plate_size` INTEGER, `model_versions` TEXT NOT NULL, `app_version` TEXT NOT NULL, `user_note` TEXT, `is_starred` INTEGER NOT NULL, `is_protected` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `linked_observation_id` TEXT, `ai_plate_text` TEXT, `ai_provider` TEXT, `ai_checked_at` INTEGER, `ai_agrees` INTEGER, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionId",
+            "columnName": "session_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "trackId",
+            "columnName": "track_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "plateText",
+            "columnName": "plate_text",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "originalPlateText",
+            "columnName": "original_plate_text",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "plateSearch",
+            "columnName": "plate_search",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "rawOcrText",
+            "columnName": "raw_ocr_text",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "perCharConfidence",
+            "columnName": "per_char_confidence",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "plateConfidence",
+            "columnName": "plate_confidence",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "detectionConfidence",
+            "columnName": "detection_confidence",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "qualityScore",
+            "columnName": "quality_score",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recognitionStatus",
+            "columnName": "recognition_status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "motionStatus",
+            "columnName": "motion_status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "direction",
+            "columnName": "direction",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vehicleClass",
+            "columnName": "vehicle_class",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "firstSeenAt",
+            "columnName": "first_seen_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bestFrameAt",
+            "columnName": "best_frame_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastSeenAt",
+            "columnName": "last_seen_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "zoneId",
+            "columnName": "zone_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scenePath",
+            "columnName": "scene_path",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "sceneSha256",
+            "columnName": "scene_sha256",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "sceneSize",
+            "columnName": "scene_size",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "vehiclePath",
+            "columnName": "vehicle_path",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "vehicleSha256",
+            "columnName": "vehicle_sha256",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "vehicleSize",
+            "columnName": "vehicle_size",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "platePath",
+            "columnName": "plate_path",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "plateSha256",
+            "columnName": "plate_sha256",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "plateSize",
+            "columnName": "plate_size",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "modelVersions",
+            "columnName": "model_versions",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appVersion",
+            "columnName": "app_version",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userNote",
+            "columnName": "user_note",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "isStarred",
+            "columnName": "is_starred",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isProtected",
+            "columnName": "is_protected",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "linkedObservationId",
+            "columnName": "linked_observation_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "aiPlateText",
+            "columnName": "ai_plate_text",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "aiProvider",
+            "columnName": "ai_provider",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "aiCheckedAt",
+            "columnName": "ai_checked_at",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "aiAgrees",
+            "columnName": "ai_agrees",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_observations_best_frame_at",
+            "unique": false,
+            "columnNames": [
+              "best_frame_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_observations_best_frame_at` ON `${TABLE_NAME}` (`best_frame_at`)"
+          },
+          {
+            "name": "index_observations_plate_search",
+            "unique": false,
+            "columnNames": [
+              "plate_search"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_observations_plate_search` ON `${TABLE_NAME}` (`plate_search`)"
+          },
+          {
+            "name": "index_observations_recognition_status",
+            "unique": false,
+            "columnNames": [
+              "recognition_status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_observations_recognition_status` ON `${TABLE_NAME}` (`recognition_status`)"
+          },
+          {
+            "name": "index_observations_is_protected",
+            "unique": false,
+            "columnNames": [
+              "is_protected"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_observations_is_protected` ON `${TABLE_NAME}` (`is_protected`)"
+          },
+          {
+            "name": "index_observations_session_id",
+            "unique": false,
+            "columnNames": [
+              "session_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_observations_session_id` ON `${TABLE_NAME}` (`session_id`)"
+          }
+        ]
+      },
+      {
+        "tableName": "sessions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `started_at` INTEGER NOT NULL, `ended_at` INTEGER, `device_info` TEXT NOT NULL, `settings_snapshot` TEXT NOT NULL, `frames_analyzed` INTEGER NOT NULL, `frames_dropped` INTEGER NOT NULL, `vehicles` INTEGER NOT NULL, `plates_read` INTEGER NOT NULL, `uncertain` INTEGER NOT NULL, `unreadable` INTEGER NOT NULL, `end_reason` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startedAt",
+            "columnName": "started_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endedAt",
+            "columnName": "ended_at",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "deviceInfo",
+            "columnName": "device_info",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settingsSnapshot",
+            "columnName": "settings_snapshot",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "framesAnalyzed",
+            "columnName": "frames_analyzed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "framesDropped",
+            "columnName": "frames_dropped",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vehicles",
+            "columnName": "vehicles",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "platesRead",
+            "columnName": "plates_read",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "uncertain",
+            "columnName": "uncertain",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "unreadable",
+            "columnName": "unreadable",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endReason",
+            "columnName": "end_reason",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "diagnostic_events",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL, `stage` TEXT NOT NULL, `code` TEXT NOT NULL, `duration_ms` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stage",
+            "columnName": "stage",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "code",
+            "columnName": "code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "durationMs",
+            "columnName": "duration_ms",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_diagnostic_events_timestamp",
+            "unique": false,
+            "columnNames": [
+              "timestamp"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_diagnostic_events_timestamp` ON `${TABLE_NAME}` (`timestamp`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '79134c2b7af16db02d5792f7cc7bccd2')"
+    ]
+  }
+}

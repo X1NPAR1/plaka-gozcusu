@@ -57,6 +57,8 @@ class SettingsRepository
                 storageCapMb = p[K.CAP] ?: d.storageCapMb,
                 showOverlays = p[K.OVERLAYS] ?: d.showOverlays,
                 themeMode = enumOr(p[K.THEME], d.themeMode),
+                aiEnabled = p[K.AI_ENABLED] ?: d.aiEnabled,
+                aiModel = p[K.AI_MODEL]?.takeIf { it.isNotBlank() } ?: d.aiModel,
                 calibration = toCalibration(p, d.calibration),
             ).validated()
         }
@@ -89,6 +91,8 @@ class SettingsRepository
             p[K.CAP] = s.storageCapMb
             p[K.OVERLAYS] = s.showOverlays
             p[K.THEME] = s.themeMode.name
+            p[K.AI_ENABLED] = s.aiEnabled
+            p[K.AI_MODEL] = s.aiModel.trim()
             p[K.ZOOM] = s.calibration.zoomRatio
             p[K.ROI] = Calibration.encodeRoi(s.calibration.roiPoints)
             p[K.FOCUS_LOCK] = s.calibration.focusLocked
@@ -115,6 +119,8 @@ class SettingsRepository
             val CAP = intPreferencesKey("storage_cap_mb")
             val OVERLAYS = booleanPreferencesKey("show_overlays")
             val THEME = stringPreferencesKey("theme_mode")
+            val AI_ENABLED = booleanPreferencesKey("ai_enabled")
+            val AI_MODEL = stringPreferencesKey("ai_model")
             val ZOOM = floatPreferencesKey("cal_zoom")
             val ROI = stringPreferencesKey("cal_roi")
             val FOCUS_LOCK = booleanPreferencesKey("cal_focus_locked")

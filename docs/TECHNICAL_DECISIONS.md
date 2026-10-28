@@ -53,3 +53,14 @@ Spec listed :feature:{monitor,records,detail,incident,settings,onboarding}. Impl
 export) and :feature:settings, plus :feature:onboarding (onboarding + calibration). Detail/incident share
 the record row, export and bulk-action code, so one module avoids cross-feature dependencies.
 Evidence export uses the Storage Access Framework (user picks destination); no FileProvider/auto-share.
+
+## ADR-010 Opt-in cloud AI plate check (0.3.0, user decision)
+- **Context:** User asked for an optional AI second opinion with their own API key (preferably free).
+- **Decision:** Google Gemini `generateContent` (default model `gemini-2.5-flash`, user-editable). Off by default;
+  requires the user's key, stored AES-GCM-encrypted with an Android Keystore key. Sends only the plate (or vehicle)
+  crop + on-device candidate strings, via WorkManager with a network constraint and exponential backoff.
+- **Trust rules:** answer must parse as a valid Turkish civilian plate; agreement → HIGH_CONFIDENCE; disagreement →
+  NEEDS_REVIEW suggestion the user can accept; user-confirmed records are never changed; raw OCR is never changed.
+- **Consequences:** INTERNET + ACCESS_NETWORK_STATE are now in the manifest (supersedes ADR-005's "no INTERNET").
+  Free-tier Gemini content may be used by Google to improve products (pricing page, 2026-10-28) — shown in the UI.
+  Room schema v2 (migration 1→2, tested from the committed v1 schema).

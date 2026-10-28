@@ -21,4 +21,13 @@
     <string name="settings_about">Hakkında</string>
     <string name="settings_versions">Uygulama %1$s · Modeller: %2$s</string>
     <string name="settings_licenses">Açık kaynak: EfficientDet-Lite0 (Apache 2.0, TensorFlow), LiteRT (Apache 2.0), AndroidX/Jetpack (Apache 2.0), Coil (Apache 2.0), Kotlin (Apache 2.0). ML Kit Text Recognition: Google ML Kit Hizmet Şartları.</string>
+    <string name="ai_title">Yapay zekâ ile plaka doğrulama (isteğe bağlı)</string>
+    <string name="ai_body">Açıkken, emin olunamayan kayıtların plaka görüntüsü Google Gemini yapay zekâsına gönderilip ikinci bir okuma alınır. Aynı sonuç çıkarsa kayıt güvenilir sayılır; farklıysa öneri olarak gösterilir ve senin onayını bekler. Uygulamanın kendi okuması hiçbir zaman silinmez.</string>
+    <string name="ai_privacy">Dikkat: Bu özellik açıldığında plaka görüntüleri telefondan çıkar. Ücretsiz Gemini kullanımında Google, gönderilen içeriği kendi ürünlerini geliştirmek için kullanabilir. Başkalarına ait plakaları göndermenin hukuki sorumluluğu (KVKK) sana aittir. API anahtarını aistudio.google.com adresinden ücretsiz alabilirsin; anahtar telefonda şifreli saklanır.</string>
+    <string name="ai_key">Gemini API anahtarı</string>
+    <string name="ai_key_saved">Anahtar kayıtlı (değiştirmek için yenisini yaz)</string>
+    <string name="ai_model">Model (ör. gemini-2.5-flash)</string>
+    <string name="ai_save">Kaydet</string>
+    <string name="ai_remove">Anahtarı sil</string>
+    <string name="ai_enable">Yapay zekâ doğrulamasını kullan</string>
 </resources>

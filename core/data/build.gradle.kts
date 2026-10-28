@@ -13,6 +13,7 @@ dependencies {
     api(project(":core:storage"))
     api(project(":core:datastore"))
     api(project(":core:database"))
+    implementation(project(":vision:pipeline"))
     implementation(libs.room.runtime)
     implementation(libs.work.runtime.ktx)
     implementation(libs.androidx.hilt.work)

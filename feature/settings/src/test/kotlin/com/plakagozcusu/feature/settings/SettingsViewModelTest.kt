@@ -3,6 +3,7 @@ package com.plakagozcusu.feature.settings
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.lifecycle.viewModelScope
 import com.google.common.truth.Truth.assertThat
+import com.plakagozcusu.core.datastore.SecretStore
 import com.plakagozcusu.core.datastore.SettingsRepository
 import com.plakagozcusu.core.model.AnalysisLoad
 import kotlinx.coroutines.Dispatchers
@@ -31,8 +32,9 @@ class SettingsViewModelTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(dispatcher)
-        repo = SettingsRepository(PreferenceDataStoreFactory.create { File(tmp.root, "s.preferences_pb") })
-        vm = SettingsViewModel(repo)
+        val store = PreferenceDataStoreFactory.create { File(tmp.root, "s.preferences_pb") }
+        repo = SettingsRepository(store)
+        vm = SettingsViewModel(repo, SecretStore(store))
     }
 
     @After

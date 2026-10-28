@@ -57,6 +57,10 @@ data class ObservationEntity(
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "updated_at") val updatedAt: Long,
     @ColumnInfo(name = "linked_observation_id") val linkedObservationId: String? = null,
+    @ColumnInfo(name = "ai_plate_text") val aiPlateText: String? = null,
+    @ColumnInfo(name = "ai_provider") val aiProvider: String? = null,
+    @ColumnInfo(name = "ai_checked_at") val aiCheckedAt: Long? = null,
+    @ColumnInfo(name = "ai_agrees") val aiAgrees: Boolean? = null,
 )
 
 @Entity(tableName = "sessions")

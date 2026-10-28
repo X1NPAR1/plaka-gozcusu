@@ -2,6 +2,7 @@ package com.plakagozcusu.feature.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,16 +11,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.plakagozcusu.core.designsystem.component.PgCard
@@ -56,6 +62,7 @@ fun SettingsScreen(
         )
         LoadCard(settings, viewModel)
         StorageCard(settings, viewModel)
+        AiCard(settings, viewModel)
         RecognitionCard(settings, viewModel, onRecalibrate)
         PrivacyCard()
         AboutCard(appVersion, modelVersions)
@@ -186,5 +193,46 @@ private fun AboutCard(
         Text(stringResource(R.string.settings_about), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(R.string.settings_versions, appVersion, modelVersions), style = MaterialTheme.typography.bodySmall)
         Text(stringResource(R.string.settings_licenses), style = MaterialTheme.typography.bodySmall)
+    }
+}
+
+@Composable
+private fun AiCard(
+    settings: AppSettings,
+    viewModel: SettingsViewModel,
+) {
+    val hasKey by viewModel.hasAiKey.collectAsStateWithLifecycle()
+    var key by remember { mutableStateOf("") }
+    var model by remember(settings.aiModel) { mutableStateOf(settings.aiModel) }
+    PgCard(Modifier.fillMaxWidth()) {
+        Text(stringResource(R.string.ai_title), style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.ai_body), style = MaterialTheme.typography.bodyMedium)
+        Text(stringResource(R.string.ai_privacy), style = MaterialTheme.typography.bodySmall, color = PgTheme.status.warning)
+        OutlinedTextField(
+            value = key,
+            onValueChange = { key = it },
+            label = { Text(stringResource(if (hasKey) R.string.ai_key_saved else R.string.ai_key)) },
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        OutlinedTextField(
+            value = model,
+            onValueChange = { model = it },
+            label = { Text(stringResource(R.string.ai_model)) },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm)) {
+            PgSecondaryButton(stringResource(R.string.ai_save), {
+                if (key.isNotBlank()) viewModel.saveAiKey(key)
+                key = ""
+                viewModel.update { it.copy(aiModel = model.ifBlank { AppSettings.DEFAULT_AI_MODEL }) }
+            })
+            if (hasKey) PgSecondaryButton(stringResource(R.string.ai_remove), { viewModel.saveAiKey("") })
+        }
+        ToggleRow(stringResource(R.string.ai_enable), settings.aiEnabled && hasKey) { v ->
+            if (hasKey) viewModel.update { it.copy(aiEnabled = v) }
+        }
     }
 }

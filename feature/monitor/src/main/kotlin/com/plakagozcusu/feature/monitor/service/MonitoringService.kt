@@ -17,6 +17,7 @@ import com.plakagozcusu.core.common.AppResult
 import com.plakagozcusu.core.common.TimeSource
 import com.plakagozcusu.core.data.EvidenceBytes
 import com.plakagozcusu.core.data.ObservationRepository
+import com.plakagozcusu.core.data.ai.AiVerifyWorker
 import com.plakagozcusu.core.datastore.SettingsRepository
 import com.plakagozcusu.core.model.AppSettings
 import com.plakagozcusu.core.model.MonitoringSession
@@ -293,6 +294,10 @@ class MonitoringService : LifecycleService() {
             return
         }
         stats.record(r.status)
+        // Optional AI second opinion for anything not already certain (user opted in with own key).
+        if (ctx.settings.aiEnabled && r.status != RecognitionStatus.HIGH_CONFIDENCE) {
+            AiVerifyWorker.enqueue(this, id)
+        }
     }
 
     private fun pause(

@@ -82,6 +82,7 @@ fun DetailScreen(
     ) {
         EvidenceGallery(observation, viewModel::fileOf, open)
         InfoCard(observation, integrity)
+        AiCard(observation, onAsk = viewModel::askAi, onAccept = viewModel::acceptAi)
         ExportStatus(export, viewModel::consumeExport)
         ActionRows(observation, viewModel, onDialog = { dialog = it }, onExport = { exportLauncher.launch(exportFileName()) })
     }
@@ -275,4 +276,29 @@ private fun EvidenceGallery(
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
+}
+
+@Composable
+private fun AiCard(
+    o: Observation,
+    onAsk: () -> Unit,
+    onAccept: () -> Unit,
+) {
+    PgCard(Modifier.fillMaxWidth()) {
+        Text(stringResource(R.string.ai_section), style = MaterialTheme.typography.titleMedium)
+        val ai = o.ai
+        val aiPlate = ai?.plateText
+        when {
+            ai == null -> Text(stringResource(R.string.ai_none), color = MaterialTheme.colorScheme.onSurfaceVariant)
+            aiPlate == null -> Text(stringResource(R.string.ai_unreadable))
+            ai.agreesWithReading -> Text(stringResource(R.string.ai_agrees, aiPlate), color = PgTheme.status.success)
+            else -> Text(stringResource(R.string.ai_differs, aiPlate), color = PgTheme.status.warning, style = PlateTextStyle)
+        }
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm)) {
+            if (aiPlate != null && ai.agreesWithReading.not() && !o.recognitionStatus.isUserConfirmed) {
+                PgSecondaryButton(stringResource(R.string.ai_accept), onAccept)
+            }
+            PgTextButton(stringResource(R.string.ai_ask), onAsk)
+        }
+    }
 }

@@ -22,6 +22,9 @@ data class AppSettings(
     val storageCapMb: Int = DEFAULT_STORAGE_CAP_MB,
     val showOverlays: Boolean = true,
     val themeMode: ThemeMode = ThemeMode.DARK,
+    /** Opt-in cloud AI second opinion (sends plate crops off the device). Off by default. */
+    val aiEnabled: Boolean = false,
+    val aiModel: String = DEFAULT_AI_MODEL,
     val calibration: Calibration = Calibration(),
 ) {
     fun validated(): AppSettings =
@@ -36,6 +39,7 @@ data class AppSettings(
         )
 
     companion object {
+        const val DEFAULT_AI_MODEL = "gemini-2.5-flash"
         const val DEFAULT_DETECTION_CONFIDENCE = 0.5f
         const val DEFAULT_HIGH_CONFIDENCE_QUALITY = 0.7f
         const val DEFAULT_MOTION_THRESHOLD = 15f

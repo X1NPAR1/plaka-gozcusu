@@ -61,4 +61,11 @@
     <string name="viewer_open">Görüntüyü büyüt</string>
     <string name="viewer_hint">İki parmakla yakınlaştır · çift dokunarak büyüt/küçült · Geri ile kapat</string>
     <string name="detail_tap_to_open">Görüntüleri büyütmek için üzerlerine dokun.</string>
+    <string name="ai_section">Yapay zekâ ikinci görüşü</string>
+    <string name="ai_none">Henüz yapay zekâya sorulmadı (Ayarlar’dan açılabilir).</string>
+    <string name="ai_unreadable">Yapay zekâ da plakayı okuyamadı.</string>
+    <string name="ai_agrees">Yapay zekâ aynı plakayı okudu: %1$s</string>
+    <string name="ai_differs">Yapay zekânın önerisi: %1$s</string>
+    <string name="ai_accept">Öneriyi kabul et</string>
+    <string name="ai_ask">Yapay zekâya sor</string>
 </resources>

@@ -37,6 +37,16 @@ data class Observation(
     val updatedAt: Long,
     /** Earlier observation with the same confident plate inside the duplicate window (linked, never dropped). */
     val linkedObservationId: String? = null,
+    /** Optional cloud AI second opinion (opt-in). Never replaces plateText or rawOcrText by itself. */
+    val ai: AiOpinion? = null,
+)
+
+/** Result of the optional AI plate check. [plateText] is null when the AI judged the plate unreadable. */
+data class AiOpinion(
+    val plateText: String?,
+    val provider: String,
+    val checkedAt: Long,
+    val agreesWithReading: Boolean,
 )
 
 /** A stored evidence file: path relative to the evidence root, its SHA-256 (hex) and size. */

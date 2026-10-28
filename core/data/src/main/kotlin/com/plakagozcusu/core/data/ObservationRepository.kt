@@ -193,6 +193,22 @@ class ObservationRepository
                 AppResult.Success(Unit)
             }
 
+        /** Stores an AI second opinion and the resulting status (see AiDecision). */
+        suspend fun applyAiOpinion(
+            id: String,
+            aiPlate: String?,
+            provider: String,
+        ) = db.withTransaction {
+            val row = dao.get(id) ?: return@withTransaction
+            val current = RecognitionStatus.entries.firstOrNull { it.name == row.recognitionStatus } ?: return@withTransaction
+            val (status, agrees) =
+                com.plakagozcusu.core.data.ai.AiDecision
+                    .apply(current, row.plateText, aiPlate)
+            dao.updateAi(id, aiPlate, provider, time.now().toEpochMilli(), agrees, status.name)
+        }
+
+        suspend fun get(id: String): Observation? = dao.get(id)?.toModel()
+
         /** Map of evidence kind to integrity check result for the detail screen and export. */
         suspend fun verifyEvidence(observation: Observation): Map<String, Boolean> =
             withContext(dispatchers.io) {

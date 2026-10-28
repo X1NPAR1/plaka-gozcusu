@@ -2,6 +2,7 @@ package com.plakagozcusu.core.data
 
 import com.plakagozcusu.core.database.dao.normalizePlateForSearch
 import com.plakagozcusu.core.database.entity.ObservationEntity
+import com.plakagozcusu.core.model.AiOpinion
 import com.plakagozcusu.core.model.EvidenceFile
 import com.plakagozcusu.core.model.MotionStatus
 import com.plakagozcusu.core.model.Observation
@@ -47,6 +48,10 @@ internal fun Observation.toEntity() =
         createdAt = createdAt,
         updatedAt = updatedAt,
         linkedObservationId = linkedObservationId,
+        aiPlateText = ai?.plateText,
+        aiProvider = ai?.provider,
+        aiCheckedAt = ai?.checkedAt,
+        aiAgrees = ai?.agreesWithReading,
     )
 
 internal fun ObservationEntity.toModel() =
@@ -80,6 +85,10 @@ internal fun ObservationEntity.toModel() =
         createdAt = createdAt,
         updatedAt = updatedAt,
         linkedObservationId = linkedObservationId,
+        ai =
+            aiProvider?.let { provider ->
+                aiCheckedAt?.let { at -> AiOpinion(aiPlateText, provider, at, aiAgrees == true) }
+            },
     )
 
 internal val ObservationEntity.evidencePaths: List<String>

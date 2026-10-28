@@ -95,6 +95,20 @@ interface ObservationDao {
     @Query("DELETE FROM observations WHERE id IN (:ids)")
     suspend fun delete(ids: List<String>): Int
 
+    @Query(
+        "UPDATE observations SET ai_plate_text = :plate, ai_provider = :provider, ai_checked_at = :at, " +
+            "ai_agrees = :agrees, recognition_status = :status, updated_at = :at WHERE id = :id",
+    )
+    @Suppress("LongParameterList") // One bind parameter per updated column.
+    suspend fun updateAi(
+        id: String,
+        plate: String?,
+        provider: String,
+        at: Long,
+        agrees: Boolean,
+        status: String,
+    )
+
     /** Retention path: never deletes a row that became protected after planning. */
     @Query("SELECT * FROM observations WHERE id IN (:ids) AND is_protected = 0")
     suspend fun getUnprotected(ids: List<String>): List<ObservationEntity>
