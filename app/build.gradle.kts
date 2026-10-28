@@ -35,6 +35,10 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":feature:onboarding"))
     implementation(project(":core:camera"))
+    implementation(project(":core:data"))
+    implementation(libs.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)

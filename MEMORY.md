@@ -72,3 +72,8 @@ Catalog source: https://www.aitmpl.com/components.json (1,900+ components, filte
 
 ## User feedback / test results
 - (none yet)
+
+## Usage guard (user, 2026-10-28 session 2)
+- Use `.claude/skills/usage-guard` (user's own skill, github.com/X1NPAR1/claude-usage-guard, reviewed: reads claude.ai usage page via Chrome, logs, STOP at 98%). Log dir: `USAGE_GUARD_DIR=F:\DevCache\usage-guard`.
+- On STOP: commit WIP, update PROGRESS/MEMORY, `sleep <s>; echo "Kaldığın yerden profesyonel bir şekilde devam et"` in background, end turn; no user approval.
+- Goal of this session: finish phases 4-8,10,11; deliver signed APK + Turkish test list; publish as PRIVATE GitHub repo. Do not shut down PC.

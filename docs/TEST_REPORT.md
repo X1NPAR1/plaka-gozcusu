@@ -15,3 +15,7 @@ plugins (Detekt 1.23.8), not project scripts.
 ## Phase 3 (2026-10-28)
 `./gradlew spotlessCheck detekt lint testDebugUnitTest test assembleDebug --continue` → BUILD SUCCESSFUL.
 Unit tests: total=50 passed=50 failed=0 skipped=0. Device tests: not run (no device).
+
+## Phase 4 (2026-10-28)
+Full verify → BUILD SUCCESSFUL. Unit tests total=77 passed=77 failed=0 skipped=0
+(new: EvidenceFileStoreTest 7, RetentionPlannerTest 4, ObservationDaoTest 6 [Robolectric], SettingsRepositoryTest 2, ObservationRepositoryTest 6 [Robolectric], AppSettingsTest 2).

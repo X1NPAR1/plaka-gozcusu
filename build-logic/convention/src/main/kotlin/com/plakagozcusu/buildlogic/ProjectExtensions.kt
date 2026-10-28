@@ -6,6 +6,9 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.tasks.testing.Test
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
@@ -23,6 +26,7 @@ internal fun VersionCatalog.lib(alias: String) = findLibrary(alias).get()
 /** Java/Kotlin bytecode level for every module; 17 is supported by AGP 9 and all dependencies. */
 internal val PROJECT_JAVA_VERSION = JavaVersion.VERSION_17
 internal val PROJECT_JVM_TARGET = JvmTarget.JVM_17
+private const val TEST_JDK = 21
 
 internal fun Project.configureAndroidCommon(extension: CommonExtension) {
     extension.apply {
@@ -39,6 +43,13 @@ internal fun Project.configureAndroidCommon(extension: CommonExtension) {
         lint.disable += setOf("GradleDependency", "NewerVersionAvailable", "AndroidGradlePluginVersion")
     }
     configureKotlinCompiler()
+    // Robolectric sandboxes for the current SDKs need a Java 21 runtime; bytecode stays at 17.
+    val toolchains = extensions.getByType<JavaToolchainService>()
+    tasks.withType<Test>().configureEach {
+        javaLauncher.set(toolchains.launcherFor { languageVersion.set(JavaLanguageVersion.of(TEST_JDK)) })
+        // Robolectric's FileDescriptor interceptor reflects into JDK internals.
+        jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED", "--add-opens=java.base/java.io=ALL-UNNAMED")
+    }
     dependencies {
         add("testImplementation", libs.lib("junit4"))
         add("testImplementation", libs.lib("truth"))

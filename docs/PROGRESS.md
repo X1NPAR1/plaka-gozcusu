@@ -8,8 +8,8 @@ Legend: ✅ done · 🔄 in progress · ⏳ pending · ⛔ blocked (with evidenc
 | 1 | aitmpl, CLAUDE.md, MEMORY.md, skills, docs, ADRs | ✅ | |
 | 2 | Gradle foundation, design system, navigation, onboarding shell, static analysis | ✅ | build + checks green |
 | 3 | Camera subsystem | ✅ (device check ⛔ no phone) | Device acceptance blocked until phone connected |
-| 4 | Data layer | ⏳ | |
-| 5 | Model research & selection | ⏳ | |
+| 4 | Data layer | ✅ | |
+| 5 | Model research & selection | 🔄 | |
 | 6 | Vision pipeline | ⏳ | |
 | 7 | Monitoring workflow | ⏳ | |
 | 8 | Product UI | ⏳ | |
@@ -40,3 +40,11 @@ Legend: ✅ done · 🔄 in progress · ⏳ pending · ⛔ blocked (with evidenc
 - [x] Code review: 8 findings fixed (bind/unbind race, observer leak, main-thread blocking, metering crop, aspect fallback, exceptions, executor leak, zoom clamp)
 - [ ] On-device preview check: blocked, no phone connected
 - PAUSED by user 2026-10-28 after Phase 3 commit. Next: Phase 4 (data layer). Resume cron deleted; recreate on resume.
+
+## Phase 4 checklist
+- [x] core:storage (JVM): EvidenceFileStore atomic temp+fsync+rename, SHA-256, verify, temp sweep, path-traversal guard; RetentionPlanner
+- [x] core:database: Room v1 (observations, sessions, diagnostic_events), indexes, parameterised timeline query, partial plate search (escaped LIKE), schema exported
+- [x] core:datastore: typed validated settings incl. calibration
+- [x] core:data: ObservationRepository (files-then-row, rollback, delete cascades files, correction keeps original, integrity verify, maintenance), RetentionWorker (daily, Hilt)
+- [x] Unit tests run on JDK 21 toolchain (Robolectric requirement); 77/77 pass
+- Note: PROGRESS continued in session 2 (user resumed); phase close reviews batched per two phases to save budget.

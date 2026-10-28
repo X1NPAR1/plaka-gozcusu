@@ -9,6 +9,8 @@ complexity:
   TooManyFunctions:
     # Classes implementing a wide platform interface (CameraController) or a screen's VM actions.
     thresholdInClasses: 15
+    # Room DAOs and repositories are deliberately wide API surfaces over one table.
+    ignoreAnnotated: ['Dao', 'Singleton']
   LongParameterList:
     # Composables legitimately take many parameters (modifier, state, callbacks).
     ignoreAnnotated: ['Composable']

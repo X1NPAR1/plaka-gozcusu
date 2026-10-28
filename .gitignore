@@ -41,3 +41,4 @@ device-logs/
 **/bin/
 hs_err_pid*.log
 replay_pid*.log
+.claude/skills/usage-guard/usage-log.txt
