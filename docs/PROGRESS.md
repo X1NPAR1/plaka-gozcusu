@@ -13,9 +13,9 @@ Legend: ✅ done · 🔄 in progress · ⏳ pending · ⛔ blocked (with evidenc
 | 6 | Vision pipeline | ✅ | |
 | 7 | Monitoring workflow | ✅ (device behaviour ⛔ no phone) | |
 | 8 | Product UI | ✅ (screenshot review ⛔ no device) | |
-| 9 | Real-device pilot (user) | ⏳ | Requires user |
-| 10 | Optimization & hardening | 🔄 | |
-| 11 | Release readiness | ⏳ | |
+| 9 | Real-device pilot (user) | ⛔ waiting for user | Guide: TEST_PLAN.md §3 (A–L), DEVICE_SETUP.md |
+| 10 | Optimization & hardening | ✅ partial (profiling/Baseline Profiles ⛔ need device) | |
+| 11 | Release readiness | ✅ signed release APK built | |
 
 ## Phase 1 checklist
 - [x] git init, .gitignore, local.properties (sdk.dir fix)

@@ -77,3 +77,11 @@ Catalog source: https://www.aitmpl.com/components.json (1,900+ components, filte
 - Use `.claude/skills/usage-guard` (user's own skill, github.com/X1NPAR1/claude-usage-guard, reviewed: reads claude.ai usage page via Chrome, logs, STOP at 98%). Log dir: `USAGE_GUARD_DIR=F:\DevCache\usage-guard`.
 - On STOP: commit WIP, update PROGRESS/MEMORY, `sleep <s>; echo "Kaldığın yerden profesyonel bir şekilde devam et"` in background, end turn; no user approval.
 - Goal of this session: finish phases 4-8,10,11; deliver signed APK + Turkish test list; publish as PRIVATE GitHub repo. Do not shut down PC.
+
+## Status 2026-10-28 (session 2)
+- Phases 4–8 done, 10 partial, 11 done (signed APK). Phase 9 waits for the user's device tests (TEST_PLAN §3).
+- Release keystore: F:\DevCache\keys\plaka-gozcusu-release.jks; credentials in F:\DevCache\keyselease-signing.properties,
+  referenced by `plaka.signing.properties` in F:\DevCache\gradle-home\gradle.properties. NEVER commit these. Back them up:
+  losing the keystore means updates can't be installed over this build.
+- Release APK copy: F:\DevCacheelease\PlakaGozcusu-0.1.0-release.apk
+- Next when user reports: fix device issues, measure latency/thermal, tune defaults, Baseline Profiles, per-ABI splits.

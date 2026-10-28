@@ -1,6 +1,7 @@
 package com.plakagozcusu.app.di
 
 import android.util.Log
+import com.plakagozcusu.app.BuildConfig
 import com.plakagozcusu.core.common.AppLogger
 import com.plakagozcusu.core.common.AppLogger.Companion.TAG
 import javax.inject.Inject
@@ -25,7 +26,7 @@ class LogcatAppLogger
             code: String,
             throwable: Throwable?,
         ) {
-            Log.w(TAG, format(stage, code, null), throwable)
+            Log.w(TAG, format(stage, code, null) + describe(throwable))
         }
 
         override fun error(
@@ -33,8 +34,14 @@ class LogcatAppLogger
             code: String,
             throwable: Throwable?,
         ) {
-            Log.e(TAG, format(stage, code, null), throwable)
+            Log.e(TAG, format(stage, code, null) + describe(throwable), throwable.takeIf { BuildConfig.DEBUG })
         }
+
+        /**
+         * Exception messages can carry data values (e.g. a SQL constraint text), so release logs keep
+         * only the exception type; debug builds keep the full stack trace on errors.
+         */
+        private fun describe(t: Throwable?): String = t?.let { " (${it::class.java.simpleName})" }.orEmpty()
 
         private fun format(
             stage: String,

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("plakagozcusu.android.application")
     id("plakagozcusu.android.compose")
@@ -9,12 +11,31 @@ apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 
 android {
     namespace = "com.plakagozcusu.app"
+    buildFeatures.buildConfig = true
 
     defaultConfig {
         applicationId = "com.plakagozcusu.app"
         versionCode = 1
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    // Release signing comes from a properties file outside the repo, referenced by the user-level
+    // Gradle property `plaka.signing.properties`. Without it the release APK is built unsigned.
+    val signingProps =
+        providers
+            .gradleProperty("plaka.signing.properties")
+            .orNull
+            ?.let { file(it) }
+            ?.takeIf { it.isFile }
+            ?.let { f -> Properties().apply { f.inputStream().use(::load) } }
+    if (signingProps != null) {
+        signingConfigs.create("release") {
+            storeFile = file(signingProps.getProperty("storeFile"))
+            storePassword = signingProps.getProperty("storePassword")
+            keyAlias = signingProps.getProperty("keyAlias")
+            keyPassword = signingProps.getProperty("keyPassword")
+        }
     }
 
     buildTypes {
@@ -25,6 +46,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            if (signingProps != null) signingConfig = signingConfigs.getByName("release")
         }
     }
 }
