@@ -62,6 +62,8 @@ compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-material3 = { module = "androidx.compose.material3:material3" }
 compose-animation = { module = "androidx.compose.animation:animation" }
+# Not in the BOM; 1.7.8 is the latest stable (verified 2026-10-28). R8 strips unused icons.
+compose-icons-extended = { module = "androidx.compose.material:material-icons-extended", version = "1.7.8" }
 
 camerax-core = { module = "androidx.camera:camera-core", version.ref = "camerax" }
 camerax-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camerax" }

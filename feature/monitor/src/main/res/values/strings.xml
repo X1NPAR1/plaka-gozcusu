@@ -34,4 +34,10 @@
     <string name="background_title">Ekran kapalıyken kesintisiz izleme</string>
     <string name="background_body">Android pil tasarrufu, ekran kapalıyken izlemeyi yavaşlatabilir veya durdurabilir. Uygulamanın arka planda kısıtlanmadan çalışmasına izin ver. Samsung, Xiaomi, Huawei gibi telefonlarda ayrıca kurulum kılavuzundaki üretici ayarlarını yap.</string>
     <string name="background_fix">Arka planda çalışmaya izin ver</string>
+    <string name="control_idle_hint">Telefon sabitlendiyse izlemeyi başlat. Ekran kapalıyken ve uygulama arka plandayken de çalışır.</string>
+    <string name="control_active_hint">Yoldan geçen araçlar otomatik kaydediliyor. Uzun süreli kullanım için ekranı karartabilirsin.</string>
+    <string name="stat_vehicles">Araç</string>
+    <string name="stat_read">Okunan plaka</string>
+    <string name="stat_review">İnceleme gerekli</string>
+    <string name="stat_unreadable">Okunamadı</string>
 </resources>

@@ -21,6 +21,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,8 +58,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.plakagozcusu.core.common.AppError
 import com.plakagozcusu.core.designsystem.component.PgCard
+import com.plakagozcusu.core.designsystem.component.PgContentColumn
+import com.plakagozcusu.core.designsystem.component.PgIconButton
 import com.plakagozcusu.core.designsystem.component.PgPrimaryButton
+import com.plakagozcusu.core.designsystem.component.PgScreen
 import com.plakagozcusu.core.designsystem.component.PgSecondaryButton
+import com.plakagozcusu.core.designsystem.component.PgSectionHeader
+import com.plakagozcusu.core.designsystem.component.PgStatTile
 import com.plakagozcusu.core.designsystem.component.PgStatusPill
 import com.plakagozcusu.core.designsystem.component.PillTone
 import com.plakagozcusu.core.designsystem.component.StatusBadge
@@ -91,39 +105,25 @@ fun DashboardScreen(
         DimScreen(state, onWake = { dimmed = false })
         return
     }
-    Column(
-        modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(PgTheme.spacing.lg),
-        verticalArrangement = Arrangement.spacedBy(PgTheme.spacing.md),
-    ) {
-        Text(
-            stringResource(R.string.dashboard_title),
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.semantics { heading() },
-        )
-        StatusLine(state)
-        if (active) LiveView(viewModel)
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm),
-            verticalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm),
-        ) {
-            if (active) {
-                PgPrimaryButton(stringResource(R.string.monitor_stop), viewModel::stop)
-                PgSecondaryButton(stringResource(R.string.monitor_dim), { dimmed = true })
-            } else {
-                PgPrimaryButton(stringResource(R.string.monitor_start), {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        notifLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                    } else {
-                        viewModel.start()
-                        BatteryOptimization.request(context)
-                    }
-                })
-                PgSecondaryButton(stringResource(R.string.monitor_calibrate), onCalibrate)
-            }
+    val start = {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            notifLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            viewModel.start()
+            BatteryOptimization.request(context)
         }
-        if (!exempt) BackgroundCard(onFix = { BatteryOptimization.request(context) })
-        TodayCard(today, used, viewModel.freeBytes)
-        LatestCard(latest, viewModel, onOpenRecord)
+    }
+    PgScreen(title = stringResource(R.string.dashboard_title), modifier = modifier) { inner ->
+        PgContentColumn(inner.verticalScroll(rememberScrollState())) {
+            ControlCard(state, active, onStart = start, onStop = viewModel::stop, onDim = { dimmed = true }, onCalibrate = onCalibrate)
+            if (active) LiveView(viewModel)
+            if (!exempt) BackgroundCard(onFix = { BatteryOptimization.request(context) })
+            PgSectionHeader(stringResource(R.string.today_title))
+            StatTiles(today)
+            TodayCard(used, viewModel.freeBytes)
+            PgSectionHeader(stringResource(R.string.latest_title))
+            LatestCard(latest, viewModel, onOpenRecord)
+        }
     }
 }
 
@@ -205,28 +205,21 @@ private fun LiveView(viewModel: DashboardViewModel) {
 
 @Composable
 private fun TodayCard(
-    today: TodayCounts?,
     used: Long?,
     free: Long,
 ) {
     val context = LocalContext.current
+    used ?: return
     PgCard(Modifier.fillMaxWidth()) {
-        Text(stringResource(R.string.today_title), style = MaterialTheme.typography.titleMedium)
-        if (today == null) {
-            Text(stringResource(R.string.loading), color = MaterialTheme.colorScheme.onSurfaceVariant)
-        } else {
-            Text(stringResource(R.string.today_counts, today.vehicles, today.read, today.uncertain, today.unreadable))
-        }
-        used?.let {
-            Text(
-                stringResource(
-                    R.string.storage_line,
-                    Formatter.formatShortFileSize(context, it),
-                    Formatter.formatShortFileSize(context, free),
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        Text(
+            stringResource(
+                R.string.storage_line,
+                Formatter.formatShortFileSize(context, used),
+                Formatter.formatShortFileSize(context, free),
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -301,5 +294,76 @@ private fun BackgroundCard(onFix: () -> Unit) {
         Text(stringResource(R.string.background_title), style = MaterialTheme.typography.titleMedium, color = PgTheme.status.warning)
         Text(stringResource(R.string.background_body), style = MaterialTheme.typography.bodyMedium)
         PgPrimaryButton(stringResource(R.string.background_fix), onFix)
+    }
+}
+
+@Composable
+private fun ControlCard(
+    state: MonitoringState,
+    active: Boolean,
+    onStart: () -> Unit,
+    onStop: () -> Unit,
+    onDim: () -> Unit,
+    onCalibrate: () -> Unit,
+) {
+    PgCard(Modifier.fillMaxWidth()) {
+        StatusLine(state)
+        Text(
+            stringResource(if (active) R.string.control_active_hint else R.string.control_idle_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(vertical = PgTheme.spacing.sm),
+        )
+        if (active) {
+            PgIconButton(stringResource(R.string.monitor_stop), Icons.Filled.Stop, onStop, Modifier.fillMaxWidth())
+            PgIconButton(stringResource(R.string.monitor_dim), Icons.Filled.DarkMode, onDim, Modifier.fillMaxWidth(), primary = false)
+        } else {
+            PgIconButton(stringResource(R.string.monitor_start), Icons.Filled.PlayArrow, onStart, Modifier.fillMaxWidth())
+            PgIconButton(
+                stringResource(R.string.monitor_calibrate),
+                Icons.Filled.Tune,
+                onCalibrate,
+                Modifier.fillMaxWidth(),
+                primary = false,
+            )
+        }
+    }
+}
+
+@Composable
+private fun StatTiles(today: TodayCounts?) {
+    Column(verticalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm)) {
+            PgStatTile(
+                stringResource(R.string.stat_vehicles),
+                today?.vehicles,
+                Icons.Filled.DirectionsCar,
+                PgTheme.status.live,
+                Modifier.weight(1f),
+            )
+            PgStatTile(
+                stringResource(R.string.stat_read),
+                today?.read,
+                Icons.Filled.CheckCircle,
+                PgTheme.status.success,
+                Modifier.weight(1f),
+            )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm)) {
+            PgStatTile(
+                stringResource(R.string.stat_review),
+                today?.uncertain,
+                Icons.AutoMirrored.Filled.Help,
+                PgTheme.status.warning,
+                Modifier.weight(1f),
+            )
+            PgStatTile(
+                stringResource(R.string.stat_unreadable),
+                today?.unreadable,
+                Icons.Filled.VisibilityOff,
+                PgTheme.status.neutral,
+                Modifier.weight(1f),
+            )
+        }
     }
 }
