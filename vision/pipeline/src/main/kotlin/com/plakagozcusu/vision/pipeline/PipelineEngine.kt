@@ -5,6 +5,7 @@ import com.plakagozcusu.core.model.RecognitionStatus
 import com.plakagozcusu.core.model.TravelDirection
 import com.plakagozcusu.core.model.VehicleClass
 import com.plakagozcusu.vision.api.ImageBuffer
+import com.plakagozcusu.vision.api.PlateCandidate
 import com.plakagozcusu.vision.api.PlateReader
 import com.plakagozcusu.vision.api.VehicleDetection
 import com.plakagozcusu.vision.api.VehicleDetector
@@ -130,9 +131,7 @@ class PipelineEngine(
     private class Evidence(
         val score: Float,
         val frameMs: Long,
-        val scene: ByteArray,
-        val vehicle: ByteArray,
-        val plate: ByteArray?,
+        val images: EvidenceImages,
         val raw: String?,
         val ocrConfidence: Float,
         val quality: Float,
@@ -228,53 +227,48 @@ class PipelineEngine(
         val candidates = reader.read(vehicle)
         if (candidates.isNotEmpty()) ev.anyText = true
         val vehicleEdge = pxBox.touchesEdgeOf(Size(img.width, img.height), EDGE_MARGIN_PX)
-        for (c in candidates) {
-            val plateBox =
-                RectF(
-                    c.box.left * vehicle.width,
-                    c.box.top * vehicle.height,
-                    c.box.right * vehicle.width,
-                    c.box.bottom * vehicle.height,
-                )
-            val plate = vehicle.crop(plateBox)
-            val quality = QualityScorer.score(ImageQuality.measure(plate, vehicleEdge))
-            val parse = TurkishPlateParser.parse(c.rawText)
-            ev.readings.addLast(PlateObservation(parse, c.confidence, quality))
-            if (ev.readings.size > MAX_READINGS) ev.readings.removeFirst()
-            val text = parse.normalized?.takeIf { parse.isValidCivilian } ?: continue
-            val score = quality * c.confidence
-            val current = ev.byText[text]
-            if ((current == null && ev.byText.size < MAX_TEXTS) || (current != null && score > current.score)) {
-                ev.byText[text] =
-                    Evidence(
-                        score,
-                        frame.timeMs,
-                        encoder.encode(img),
-                        encoder.encode(vehicle),
-                        encoder.encode(plate),
-                        c.rawText,
-                        c.confidence,
-                        quality,
-                    )
-            }
-        }
+        for (c in candidates) recordCandidate(frame, vehicle, c, vehicleEdge, ev)
         val area = det.box.area
         if (area > ev.fallbackArea) {
             ev.fallbackArea = area
             val raw = candidates.maxByOrNull { it.confidence }
-            ev.fallback =
-                Evidence(
-                    0f,
-                    frame.timeMs,
-                    encoder.encode(img),
-                    encoder.encode(vehicle),
-                    null,
-                    raw?.rawText,
-                    raw?.confidence ?: 0f,
-                    0f,
-                )
+            val images = EvidenceImages(encoder.encode(img), encoder.encode(vehicle), null)
+            ev.fallback = Evidence(0f, frame.timeMs, images, raw?.rawText, raw?.confidence ?: 0f, 0f)
         }
     }
+
+    private fun recordCandidate(
+        frame: AnalysisFrame,
+        vehicle: ImageBuffer,
+        c: PlateCandidate,
+        vehicleEdge: Boolean,
+        ev: TrackEvidence,
+    ) {
+        val plateBox =
+            RectF(
+                c.box.left * vehicle.width,
+                c.box.top * vehicle.height,
+                c.box.right * vehicle.width,
+                c.box.bottom * vehicle.height,
+            )
+        val plate = vehicle.crop(plateBox)
+        val quality = QualityScorer.score(ImageQuality.measure(plate, vehicleEdge))
+        val parse = TurkishPlateParser.parse(c.rawText)
+        ev.readings.addLast(PlateObservation(parse, c.confidence, quality))
+        if (ev.readings.size > MAX_READINGS) ev.readings.removeFirst()
+        val text = parse.normalized?.takeIf { parse.isValidCivilian } ?: return
+        val score = quality * c.confidence
+        if (shouldReplace(ev.byText[text], score, ev.byText.size)) {
+            val images = EvidenceImages(encoder.encode(frame.image), encoder.encode(vehicle), encoder.encode(plate))
+            ev.byText[text] = Evidence(score, frame.timeMs, images, c.rawText, c.confidence, quality)
+        }
+    }
+
+    private fun shouldReplace(
+        current: Evidence?,
+        score: Float,
+        knownTexts: Int,
+    ): Boolean = if (current == null) knownTexts < MAX_TEXTS else score > current.score
 
     private fun claimStill(
         track: Track,
@@ -304,8 +298,7 @@ class PipelineEngine(
         motion: MotionClassifier,
     ): TrackOutcome? {
         limiter.forgetTrack(track.id)
-        val ev = state.remove(track.id) ?: return null
-        if (!ev.everMovingInRoi) return null
+        val ev = state.remove(track.id)?.takeIf { it.everMovingInRoi } ?: return null
         val consensus = PlateConsensus.decide(ev.readings.toList())
         // Evidence, raw OCR, quality and confidence all come from a reading of the consensus text.
         val chosen = consensus.text?.let { ev.byText[it] } ?: ev.fallback ?: return null
@@ -336,7 +329,7 @@ class PipelineEngine(
                     plateConfidence = consensus.agreement * chosen.ocrConfidence,
                     qualityScore = chosen.quality,
                 ),
-            evidence = EvidenceImages(chosen.scene, chosen.vehicle, chosen.plate),
+            evidence = chosen.images,
             stillRequested = ev.stillRequested,
         )
     }

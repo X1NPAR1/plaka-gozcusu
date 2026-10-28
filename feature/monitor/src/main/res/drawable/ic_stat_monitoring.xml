@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Monochrome status-bar icon: plate outline with a lens. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M4,7h16a2,2 0,0 1,2 2v6a2,2 0,0 1,-2 2H4a2,2 0,0 1,-2 -2V9a2,2 0,0 1,2 -2zM4,9v6h16V9H4zM14,10a2,2 0,1 1,0 4a2,2 0,1 1,0 -4z" />
+</vector>

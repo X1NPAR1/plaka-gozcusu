@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Turkish nouns stay singular after numerals, so PluralsCandidate does not apply. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="notif_channel_monitoring">İzleme durumu</string>
+    <string name="notif_channel_warnings">Uyarılar</string>
+    <string name="notif_title">Plaka Gözcüsü</string>
+    <string name="notif_starting">İzleme başlatılıyor…</string>
+    <string name="notif_running" tools:ignore="PluralsCandidate">İzleniyor · bu oturumda %1$d araç</string>
+    <string name="notif_stop">Durdur</string>
+    <string name="notif_failed">İzleme bir hata nedeniyle durdu. Uygulamayı açıp yeniden başlat.</string>
+    <string name="pause_camera">Kamera başka bir uygulama tarafından kullanılıyor; serbest kalınca izleme kendiliğinden sürer.</string>
+    <string name="pause_scene_shift">Telefon yerinden oynamış olabilir; görüntü sabitlenene kadar kayıt duraklatıldı.</string>
+    <string name="pause_overheating">Telefon çok ısındı; soğuyana kadar izleme duraklatıldı.</string>
+    <string name="pause_storage">Depolama alanı doldu; yeni kayıt alınamıyor. Eski kayıtları silin veya saklama ayarını değiştirin.</string>
+    <string name="pause_stalled">Görüntü işleme takıldı; kamera yeniden başlatılıyor.</string>
+</resources>

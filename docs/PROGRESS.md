@@ -11,8 +11,8 @@ Legend: ✅ done · 🔄 in progress · ⏳ pending · ⛔ blocked (with evidenc
 | 4 | Data layer | ✅ | |
 | 5 | Model research & selection | ✅ (benchmarks ⛔ no device) | |
 | 6 | Vision pipeline | ✅ | |
-| 7 | Monitoring workflow | 🔄 | |
-| 8 | Product UI | ⏳ | |
+| 7 | Monitoring workflow | ✅ (device behaviour ⛔ no phone) | |
+| 8 | Product UI | 🔄 | |
 | 9 | Real-device pilot (user) | ⏳ | Requires user |
 | 10 | Optimization & hardening | ⏳ | |
 | 11 | Release readiness | ⏳ | |

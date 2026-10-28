@@ -36,6 +36,7 @@ dependencies {
     implementation(project(":feature:onboarding"))
     implementation(project(":core:camera"))
     implementation(project(":core:data"))
+    implementation(project(":feature:monitor"))
     implementation(libs.work.runtime.ktx)
     implementation(libs.androidx.hilt.work)
     ksp(libs.androidx.hilt.compiler)

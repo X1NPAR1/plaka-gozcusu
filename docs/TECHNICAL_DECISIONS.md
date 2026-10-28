@@ -39,3 +39,10 @@ Pending ADRs: Turkish plate format sources (Phase 6), model selections (Phase 5)
 - Source: en.wikipedia.org "Vehicle registration plates of Turkey" (accessed 2026-10-28). The Karayolları Trafik Yönetmeliği text could not be retrieved; rules to be re-checked against the regulation when available.
 - Province 01–81; 1L+4–5D, 2L+3–4D, 3L+2–3D; letters exclude Ç Ş İ Ö Ü Ğ Q W X. Special series (CD, CC, M*, G, T, B single, GMR, SGH, J**) → NEEDS_REVIEW.
 - OCR confusion fixes (O→0, I→1, Z→2, S→5, B→8, G→6) only in digit positions; minimal-fix reading wins; O/I at the letter/digit boundary with an alternative split → ambiguous (not valid).
+
+## ADR-006 (update, Phase 7) Camera foreground service — verified rules
+Source: developer.android.com/develop/background-work/services/fgs/service-types (2026-10-28):
+FOREGROUND_SERVICE + FOREGROUND_SERVICE_CAMERA + CAMERA; `foregroundServiceType="camera"`; a camera FGS
+cannot be started from the background nor from BOOT_COMPLETED (while-in-use restriction; targetSdk 35+).
+Consequence: monitoring only starts from the visible UI; after reboot/process death the app offers
+"resume" instead of auto-starting. START_NOT_STICKY. No timeout applies to the camera type.

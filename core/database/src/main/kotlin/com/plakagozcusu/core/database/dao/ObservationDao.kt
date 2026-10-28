@@ -103,6 +103,7 @@ interface ObservationDao {
         "UPDATE observations SET plate_text = :plate, plate_search = :search, " +
             "original_plate_text = :original, recognition_status = :status, updated_at = :now WHERE id = :id",
     )
+    @Suppress("LongParameterList") // One bind parameter per updated column.
     suspend fun updatePlate(
         id: String,
         plate: String?,

@@ -25,3 +25,8 @@ Full verify → BUILD SUCCESSFUL. Unit tests total=117 passed=117 failed=0 skipp
 New: DetectionDecoderTest 5, EfficientDetReferenceTest 5 (Python LiteRT reference dump), TurkishPlateParserTest 12,
 PipelineUnitsTest 10, PipelineReplayTest 8 (replay harness: single pass, parked, two cars, ROI, unreadable,
 no plate, disagreement → review, camera jolt pause). On-device inference/benchmarks: not run (no device).
+
+## Phase 7 + review fixes (2026-10-28)
+Full verify → BUILD SUCCESSFUL. Unit tests total=129 passed=129 failed=0 skipped=0
+(new: MonitoringSessionTest 8; repository/pipeline regression tests for the phase 4–6 review findings).
+Service lifecycle on a real device (screen off, lock, background, interruption) is untested — Phase 9.
