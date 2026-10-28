@@ -8,6 +8,7 @@ android {
 
 dependencies {
     implementation(project(":core:camera"))
+    implementation(project(":vision:pipeline"))
     implementation(libs.camerax.compose)
     testImplementation(libs.mockk)
     testImplementation(testFixtures(project(":core:camera")))

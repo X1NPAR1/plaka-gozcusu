@@ -39,4 +39,9 @@
     <string name="calibration_camera_failed">Kamera açılamadı. Uygulamayı kapatıp yeniden açmayı dene.</string>
     <string name="calibration_preview_description">Kamera önizlemesi. Seçili moda göre dokunarak yol alanı noktası ekleyebilir veya odak ayarlayabilirsin.</string>
     <string name="unknown_value">bilinmiyor</string>
+    <string name="calibration_reading">Fotoğraftaki plaka okunuyor…</string>
+    <string name="calibration_read_ok">Okunan plaka: %1$s</string>
+    <string name="calibration_read_none">Geçerli bir plaka okunamadı. Plakayı kadrajın ortasına al, yakınlaştır veya ışığı artır.</string>
+    <string name="calibration_read_raw">Okunan metinler: %1$s</string>
+    <string name="calibration_read_width" tools:ignore="PluralsCandidate">Fotoğrafta ölçülen plaka genişliği: %1$d piksel (100+ iyi, 60 altı zayıf)</string>
 </resources>

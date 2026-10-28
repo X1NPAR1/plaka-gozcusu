@@ -310,6 +310,21 @@ private fun CaptureCard(
             enabled = !state.capturing && state.camera is CameraState.Ready,
             modifier = Modifier.fillMaxWidth(),
         )
+        if (state.reading) Text(stringResource(R.string.calibration_reading), style = MaterialTheme.typography.bodyMedium)
+        state.testRead?.let { r ->
+            Text(
+                r.plate?.let { stringResource(R.string.calibration_read_ok, it) } ?: stringResource(R.string.calibration_read_none),
+                style = MaterialTheme.typography.titleMedium,
+                color = if (r.plate != null) PgTheme.status.success else PgTheme.status.warning,
+            )
+            if (r.rawTexts.isNotEmpty()) {
+                Text(
+                    stringResource(R.string.calibration_read_raw, r.rawTexts.joinToString(" · ")),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            r.plateWidthPx?.let { Text(stringResource(R.string.calibration_read_width, it), style = MaterialTheme.typography.bodyMedium) }
+        }
         state.lastCapture?.let {
             Text(
                 stringResource(

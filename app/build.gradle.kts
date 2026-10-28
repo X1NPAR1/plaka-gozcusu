@@ -59,6 +59,7 @@ dependencies {
     implementation(project(":core:camera"))
     implementation(project(":core:data"))
     implementation(project(":feature:monitor"))
+    implementation(project(":vision:models"))
     implementation(project(":feature:records"))
     implementation(project(":feature:settings"))
     implementation(project(":core:datastore"))
@@ -71,6 +72,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.profileinstaller)
 }

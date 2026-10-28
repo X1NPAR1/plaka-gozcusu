@@ -7,12 +7,15 @@ import com.plakagozcusu.core.camera.CameraCapabilities
 import com.plakagozcusu.core.camera.CameraConfig
 import com.plakagozcusu.core.camera.CameraController
 import com.plakagozcusu.core.camera.CameraState
+import com.plakagozcusu.core.camera.StillImage
 import com.plakagozcusu.core.common.AppError
 import com.plakagozcusu.core.common.AppResult
 import com.plakagozcusu.core.datastore.SettingsRepository
 import com.plakagozcusu.core.model.Calibration
+import com.plakagozcusu.vision.api.PlateReader
 import com.plakagozcusu.vision.api.geometry.PointF
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,7 +25,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Provider
 
 enum class TapMode { ROI, FOCUS }
 
@@ -42,6 +47,8 @@ data class CalibrationUiState(
     val capturing: Boolean = false,
     val lastCapture: TestCaptureInfo? = null,
     val captureError: AppError? = null,
+    val reading: Boolean = false,
+    val testRead: TestReadResult? = null,
 ) {
     val zoomRatio: Float get() = (camera as? CameraState.Ready)?.zoomRatio ?: 1f
     val focusLocked: Boolean get() = (camera as? CameraState.Ready)?.focusLocked ?: false
@@ -58,6 +65,8 @@ class CalibrationViewModel
     constructor(
         private val camera: CameraController,
         private val settings: SettingsRepository,
+        // Provider: the OCR engine is created only when a test read is requested.
+        private val plateReader: Provider<PlateReader>,
     ) : ViewModel() {
         private val local = MutableStateFlow(CalibrationUiState())
 
@@ -105,12 +114,29 @@ class CalibrationViewModel
 
         private var bindJob: Job? = null
 
+        private var boundOwner: LifecycleOwner? = null
+
+        init {
+            // If the monitoring service releases the camera after we bound (its stop is asynchronous),
+            // the camera falls back to Idle; rebind while the calibration screen is still showing.
+            viewModelScope.launch {
+                camera.state.collect { state ->
+                    val owner = boundOwner
+                    if (state is CameraState.Idle && owner != null && bindJob?.isActive != true) {
+                        bindJob = launch { camera.bind(owner, CameraConfig(withPreview = true), analyzer = null) }
+                    }
+                }
+            }
+        }
+
         fun bind(owner: LifecycleOwner) {
+            boundOwner = owner
             bindJob?.cancel()
             bindJob = viewModelScope.launch { camera.bind(owner, CameraConfig(withPreview = true), analyzer = null) }
         }
 
         fun unbind() {
+            boundOwner = null
             bindJob?.cancel()
             camera.unbind()
         }
@@ -149,6 +175,7 @@ class CalibrationViewModel
             viewModelScope.launch {
                 when (val result = camera.captureStill()) {
                     is AppResult.Success -> {
+                        readPlate(result.value)
                         local.update {
                             it.copy(
                                 capturing = false,
@@ -166,6 +193,26 @@ class CalibrationViewModel
                         local.update { it.copy(capturing = false, captureError = result.error) }
                     }
                 }
+            }
+        }
+
+        /** Runs OCR on the full-resolution still so the user can verify reading with a held/parked plate. */
+        private fun readPlate(still: StillImage) {
+            local.update { it.copy(reading = true, testRead = null) }
+            viewModelScope.launch {
+                val result =
+                    withContext(Dispatchers.Default) {
+                        runCatching {
+                            val (image, scale) = TestPlateRead.decodeUpright(still.jpeg, still.rotationDegrees)
+                            val reader = plateReader.get()
+                            try {
+                                TestPlateRead.summarize(reader.read(image), image, scale)
+                            } finally {
+                                reader.close()
+                            }
+                        }.getOrNull()
+                    }
+                local.update { it.copy(reading = false, testRead = result ?: TestReadResult(null, emptyList(), null)) }
             }
         }
 

@@ -56,4 +56,9 @@
     <string name="detail_verify_bad">Bazı dosyalar eksik veya değişmiş: %1$s</string>
     <string name="detail_missing_file">Dosya bulunamadı</string>
     <string name="detail_disclaimer">Plaka okuması otomatiktir ve hatalı olabilir; fotoğrafla karşılaştır.</string>
+    <string name="viewer_close">Kapat</string>
+    <string name="viewer_enhance">Kontrast</string>
+    <string name="viewer_open">Görüntüyü büyüt</string>
+    <string name="viewer_hint">İki parmakla yakınlaştır · çift dokunarak büyüt/küçült · Geri ile kapat</string>
+    <string name="detail_tap_to_open">Görüntüleri büyütmek için üzerlerine dokun.</string>
 </resources>

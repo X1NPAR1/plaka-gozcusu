@@ -3,8 +3,7 @@ package com.plakagozcusu.feature.records.ui
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.rememberTransformableState
-import androidx.compose.foundation.gestures.transformable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,13 +23,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -50,7 +47,6 @@ import com.plakagozcusu.core.model.Observation
 import com.plakagozcusu.feature.records.DetailViewModel
 import com.plakagozcusu.feature.records.R
 
-private const val MAX_ZOOM = 6f
 private const val PERCENT = 100f
 private const val SCENE_ASPECT = 4f / 3f
 
@@ -74,21 +70,22 @@ fun DetailScreen(
             if (uri != null) viewModel.export(resolver, uri, appVersion)
         }
     var dialog by remember { mutableStateOf(Dialog.NONE) }
+    var viewing by remember { mutableStateOf<Pair<java.io.File, String>?>(null) }
     val observation = o ?: return
+    val open: (EvidenceFile?, String) -> Unit = { f, t ->
+        f?.let(viewModel::fileOf)?.takeIf { it.isFile }?.let { viewing = it to t }
+    }
 
     Column(
         modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(PgTheme.spacing.lg),
         verticalArrangement = Arrangement.spacedBy(PgTheme.spacing.md),
     ) {
-        ZoomableImage(observation.scene, viewModel::fileOf, stringResource(R.string.detail_scene))
-        Row(horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm)) {
-            CropImage(observation.vehicleCrop, viewModel::fileOf, stringResource(R.string.detail_vehicle), Modifier.weight(1f))
-            CropImage(observation.plateCrop, viewModel::fileOf, stringResource(R.string.detail_plate), Modifier.weight(1f))
-        }
+        EvidenceGallery(observation, viewModel::fileOf, open)
         InfoCard(observation, integrity)
         ExportStatus(export, viewModel::consumeExport)
         ActionRows(observation, viewModel, onDialog = { dialog = it }, onExport = { exportLauncher.launch(exportFileName()) })
     }
+    viewing?.let { (file, title) -> ImageViewerDialog(file, title, onDismiss = { viewing = null }) }
     when (dialog) {
         // Nothing to show.
         Dialog.NONE -> {}
@@ -154,42 +151,14 @@ private fun InfoCard(
 }
 
 @Composable
-private fun ZoomableImage(
-    file: EvidenceFile?,
-    resolve: (EvidenceFile) -> java.io.File,
-    description: String,
-) {
-    var scale by remember { mutableFloatStateOf(1f) }
-    var offsetX by remember { mutableFloatStateOf(0f) }
-    var offsetY by remember { mutableFloatStateOf(0f) }
-    val state =
-        rememberTransformableState { _, zoom, pan, _ ->
-            scale = (scale * zoom).coerceIn(1f, MAX_ZOOM)
-            offsetX += pan.x
-            offsetY += pan.y
-        }
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .aspectRatio(SCENE_ASPECT)
-            .clip(MaterialTheme.shapes.medium)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .transformable(state),
-    ) {
-        EvidenceImage(file, resolve, description, ContentScale.Fit) {
-            graphicsLayer(scaleX = scale, scaleY = scale, translationX = offsetX, translationY = offsetY)
-        }
-    }
-}
-
-@Composable
 private fun CropImage(
     file: EvidenceFile?,
     resolve: (EvidenceFile) -> java.io.File,
     description: String,
     modifier: Modifier = Modifier,
+    onClick: () -> Unit,
 ) {
-    Column(modifier) {
+    Column(modifier.clickable(onClickLabel = stringResource(R.string.viewer_open), onClick = onClick)) {
         Text(description, style = MaterialTheme.typography.labelLarge)
         Box(
             Modifier
@@ -280,4 +249,30 @@ private fun ActionRows(
         PgSecondaryButton(stringResource(R.string.action_export), onExport)
         PgTextButton(stringResource(R.string.action_delete), { onDialog(Dialog.DELETE) })
     }
+}
+
+@Composable
+private fun EvidenceGallery(
+    observation: Observation,
+    resolve: (EvidenceFile) -> java.io.File,
+    open: (EvidenceFile?, String) -> Unit,
+) {
+    val sceneTitle = stringResource(R.string.detail_scene)
+    val vehicleTitle = stringResource(R.string.detail_vehicle)
+    val plateTitle = stringResource(R.string.detail_plate)
+    CropImage(observation.scene, resolve, sceneTitle, onClick = { open(observation.scene, sceneTitle) })
+    Row(horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm)) {
+        CropImage(
+            observation.vehicleCrop,
+            resolve,
+            vehicleTitle,
+            Modifier.weight(1f),
+        ) { open(observation.vehicleCrop, vehicleTitle) }
+        CropImage(observation.plateCrop, resolve, plateTitle, Modifier.weight(1f)) { open(observation.plateCrop, plateTitle) }
+    }
+    Text(
+        stringResource(R.string.detail_tap_to_open),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }

@@ -10,6 +10,7 @@ import com.plakagozcusu.core.camera.StillImage
 import com.plakagozcusu.core.common.AppError
 import com.plakagozcusu.core.common.AppResult
 import com.plakagozcusu.core.datastore.SettingsRepository
+import com.plakagozcusu.vision.api.PlateReader
 import com.plakagozcusu.vision.api.geometry.PointF
 import io.mockk.mockk
 import kotlinx.coroutines.CompletableDeferred
@@ -62,7 +63,7 @@ class CalibrationViewModelTest {
         Dispatchers.setMain(dispatcher)
         val store = PreferenceDataStoreFactory.create { File(tmp.root, "cal.preferences_pb") }
         settings = SettingsRepository(store)
-        viewModel = CalibrationViewModel(camera, settings)
+        viewModel = CalibrationViewModel(camera, settings) { mockk<PlateReader>(relaxed = true) }
     }
 
     @After

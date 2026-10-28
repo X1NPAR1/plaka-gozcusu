@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -109,6 +110,7 @@ private fun AppNavGraph(
     nav: NavHostController,
     onboardingDone: Boolean,
     appVersion: String,
+    navVm: AppNavViewModel = hiltViewModel(),
 ) {
     NavHost(
         navController = nav,
@@ -118,6 +120,7 @@ private fun AppNavGraph(
     ) {
         composable<OnboardingRoute> {
             OnboardingScreen(onFinished = {
+                navVm.releaseCameraForCalibration()
                 nav.navigate(CalibrationRoute) {
                     popUpTo(OnboardingRoute) {
                         inclusive =
@@ -134,7 +137,10 @@ private fun AppNavGraph(
         composable<DashboardRoute> {
             DashboardScreen(
                 onOpenRecord = { nav.navigate(DetailRoute(it)) },
-                onCalibrate = { nav.navigate(CalibrationRoute) },
+                onCalibrate = {
+                    navVm.releaseCameraForCalibration()
+                    nav.navigate(CalibrationRoute)
+                },
             )
         }
         composable<RecordsRoute> {
@@ -151,6 +157,7 @@ private fun AppNavGraph(
         }
         composable<SettingsRoute> {
             SettingsScreen(onRecalibrate = {
+                navVm.releaseCameraForCalibration()
                 nav.navigate(CalibrationRoute)
             }, appVersion = appVersion, modelVersions = MODEL_VERSIONS_LABEL)
         }
