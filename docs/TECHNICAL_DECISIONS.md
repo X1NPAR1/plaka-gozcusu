@@ -28,3 +28,9 @@
 - **Decision:** Monitoring runs in a user-started FGS with `foregroundServiceType="camera"`. Current Android 14+/targetSdk 36 rules (FOREGROUND_SERVICE_CAMERA permission, while-in-use start restrictions) to be verified from developer.android.com and cited here in Phase 7.
 
 Pending ADRs: Turkish plate format sources (Phase 6), model selections (Phase 5), app-level encryption (Phase 10), video clip feasibility (Phase 7/10).
+
+## ADR-007 Model selection (Phase 5)
+- **Vehicle detector:** EfficientDet-Lite0 int8 from the official `tensorflow/efficientdet` Kaggle model (Apache 2.0, verified via Kaggle API). Lite0 chosen over Lite2 for the mid/low-tier target phone (smaller input, ~half compute); revisit with on-device benchmark.
+- **Plate detection + OCR:** ML Kit Text Recognition v2 bundled Latin model as baseline behind `PlateReader`; no permissively licensed Turkish plate model found. Network permissions are removed from the merged manifest so the closed-source SDK cannot transmit anything.
+- **Runtime:** LiteRT 2.3.2 classic `Interpreter` API (CompiledModel API exists but adds NPU/GPU paths we cannot measure yet).
+- **Consequences:** Plate accuracy is unproven until the Phase 9 field test; status stays honest (NEEDS_REVIEW/UNREADABLE).

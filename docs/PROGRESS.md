@@ -9,8 +9,8 @@ Legend: ✅ done · 🔄 in progress · ⏳ pending · ⛔ blocked (with evidenc
 | 2 | Gradle foundation, design system, navigation, onboarding shell, static analysis | ✅ | build + checks green |
 | 3 | Camera subsystem | ✅ (device check ⛔ no phone) | Device acceptance blocked until phone connected |
 | 4 | Data layer | ✅ | |
-| 5 | Model research & selection | 🔄 | |
-| 6 | Vision pipeline | ⏳ | |
+| 5 | Model research & selection | ✅ (benchmarks ⛔ no device) | |
+| 6 | Vision pipeline | 🔄 | |
 | 7 | Monitoring workflow | ⏳ | |
 | 8 | Product UI | ⏳ | |
 | 9 | Real-device pilot (user) | ⏳ | Requires user |
