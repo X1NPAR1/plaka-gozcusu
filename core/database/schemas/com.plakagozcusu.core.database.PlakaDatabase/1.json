@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "70de1409f5e5aa3c493be06c056e5699",
+    "identityHash": "3f5e569d7bfdbf10d099c7520b30bb5d",
     "entities": [
       {
         "tableName": "observations",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `session_id` TEXT NOT NULL, `track_id` INTEGER NOT NULL, `plate_text` TEXT, `original_plate_text` TEXT, `plate_search` TEXT, `raw_ocr_text` TEXT, `per_char_confidence` TEXT, `plate_confidence` REAL NOT NULL, `detection_confidence` REAL NOT NULL, `quality_score` REAL NOT NULL, `recognition_status` TEXT NOT NULL, `motion_status` TEXT NOT NULL, `direction` TEXT NOT NULL, `vehicle_class` TEXT NOT NULL, `first_seen_at` INTEGER NOT NULL, `best_frame_at` INTEGER NOT NULL, `last_seen_at` INTEGER NOT NULL, `zone_id` TEXT NOT NULL, `scene_path` TEXT, `scene_sha256` TEXT, `scene_size` INTEGER, `vehicle_path` TEXT, `vehicle_sha256` TEXT, `vehicle_size` INTEGER, `plate_path` TEXT, `plate_sha256` TEXT, `plate_size` INTEGER, `model_versions` TEXT NOT NULL, `app_version` TEXT NOT NULL, `user_note` TEXT, `is_starred` INTEGER NOT NULL, `is_protected` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `session_id` TEXT NOT NULL, `track_id` INTEGER NOT NULL, `plate_text` TEXT, `original_plate_text` TEXT, `plate_search` TEXT, `raw_ocr_text` TEXT, `per_char_confidence` TEXT, `plate_confidence` REAL NOT NULL, `detection_confidence` REAL NOT NULL, `quality_score` REAL NOT NULL, `recognition_status` TEXT NOT NULL, `motion_status` TEXT NOT NULL, `direction` TEXT NOT NULL, `vehicle_class` TEXT NOT NULL, `first_seen_at` INTEGER NOT NULL, `best_frame_at` INTEGER NOT NULL, `last_seen_at` INTEGER NOT NULL, `zone_id` TEXT NOT NULL, `scene_path` TEXT, `scene_sha256` TEXT, `scene_size` INTEGER, `vehicle_path` TEXT, `vehicle_sha256` TEXT, `vehicle_size` INTEGER, `plate_path` TEXT, `plate_sha256` TEXT, `plate_size` INTEGER, `model_versions` TEXT NOT NULL, `app_version` TEXT NOT NULL, `user_note` TEXT, `is_starred` INTEGER NOT NULL, `is_protected` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `linked_observation_id` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -202,6 +202,11 @@
             "columnName": "updated_at",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "linkedObservationId",
+            "columnName": "linked_observation_id",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -395,7 +400,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '70de1409f5e5aa3c493be06c056e5699')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3f5e569d7bfdbf10d099c7520b30bb5d')"
     ]
   }
 }

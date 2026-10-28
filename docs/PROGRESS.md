@@ -10,8 +10,8 @@ Legend: ✅ done · 🔄 in progress · ⏳ pending · ⛔ blocked (with evidenc
 | 3 | Camera subsystem | ✅ (device check ⛔ no phone) | Device acceptance blocked until phone connected |
 | 4 | Data layer | ✅ | |
 | 5 | Model research & selection | ✅ (benchmarks ⛔ no device) | |
-| 6 | Vision pipeline | 🔄 | |
-| 7 | Monitoring workflow | ⏳ | |
+| 6 | Vision pipeline | ✅ | |
+| 7 | Monitoring workflow | 🔄 | |
 | 8 | Product UI | ⏳ | |
 | 9 | Real-device pilot (user) | ⏳ | Requires user |
 | 10 | Optimization & hardening | ⏳ | |

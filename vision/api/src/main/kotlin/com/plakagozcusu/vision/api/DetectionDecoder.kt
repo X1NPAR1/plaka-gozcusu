@@ -3,6 +3,14 @@ package com.plakagozcusu.vision.api
 import com.plakagozcusu.core.model.VehicleClass
 import com.plakagozcusu.vision.api.geometry.RectF
 
+/** Raw post-process outputs of a TFLite SSD-style detector. */
+class DetectionTensors(
+    val boxes: FloatArray,
+    val classes: FloatArray,
+    val scores: FloatArray,
+    val count: Int,
+)
+
 /**
  * Decodes the TFLite detection post-process outputs (boxes [N,4] as ymin,xmin,ymax,xmax normalized;
  * classes [N]; scores [N]; count) into vehicle detections. Kept in pure Kotlin so it is verified
@@ -16,13 +24,14 @@ object DetectionDecoder {
     private const val BOX_STRIDE = 4
 
     fun decode(
-        boxes: FloatArray,
-        classes: FloatArray,
-        scores: FloatArray,
-        count: Int,
+        t: DetectionTensors,
         minScore: Float,
         classMap: Map<Int, VehicleClass> = COCO_VEHICLE_CLASSES,
     ): List<VehicleDetection> {
+        val boxes = t.boxes
+        val classes = t.classes
+        val scores = t.scores
+        val count = t.count
         val n = minOf(count, scores.size, classes.size, boxes.size / BOX_STRIDE)
         return (0 until n).mapNotNull { i ->
             val cls = classMap[classes[i].toInt()] ?: return@mapNotNull null

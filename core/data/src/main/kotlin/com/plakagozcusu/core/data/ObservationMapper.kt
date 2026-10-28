@@ -46,6 +46,7 @@ internal fun Observation.toEntity() =
         isProtected = isProtected,
         createdAt = createdAt,
         updatedAt = updatedAt,
+        linkedObservationId = linkedObservationId,
     )
 
 internal fun ObservationEntity.toModel() =
@@ -78,6 +79,7 @@ internal fun ObservationEntity.toModel() =
         isProtected = isProtected,
         createdAt = createdAt,
         updatedAt = updatedAt,
+        linkedObservationId = linkedObservationId,
     )
 
 internal val ObservationEntity.evidencePaths: List<String>

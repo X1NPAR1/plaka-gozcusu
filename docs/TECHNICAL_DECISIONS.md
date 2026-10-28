@@ -34,3 +34,8 @@ Pending ADRs: Turkish plate format sources (Phase 6), model selections (Phase 5)
 - **Plate detection + OCR:** ML Kit Text Recognition v2 bundled Latin model as baseline behind `PlateReader`; no permissively licensed Turkish plate model found. Network permissions are removed from the merged manifest so the closed-source SDK cannot transmit anything.
 - **Runtime:** LiteRT 2.3.2 classic `Interpreter` API (CompiledModel API exists but adds NPU/GPU paths we cannot measure yet).
 - **Consequences:** Plate accuracy is unproven until the Phase 9 field test; status stays honest (NEEDS_REVIEW/UNREADABLE).
+
+## ADR-008 Turkish plate rules
+- Source: en.wikipedia.org "Vehicle registration plates of Turkey" (accessed 2026-10-28). The Karayolları Trafik Yönetmeliği text could not be retrieved; rules to be re-checked against the regulation when available.
+- Province 01–81; 1L+4–5D, 2L+3–4D, 3L+2–3D; letters exclude Ç Ş İ Ö Ü Ğ Q W X. Special series (CD, CC, M*, G, T, B single, GMR, SGH, J**) → NEEDS_REVIEW.
+- OCR confusion fixes (O→0, I→1, Z→2, S→5, B→8, G→6) only in digit positions; minimal-fix reading wins; O/I at the letter/digit boundary with an alternative split → ambiguous (not valid).

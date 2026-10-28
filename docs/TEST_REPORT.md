@@ -19,3 +19,9 @@ Unit tests: total=50 passed=50 failed=0 skipped=0. Device tests: not run (no dev
 ## Phase 4 (2026-10-28)
 Full verify → BUILD SUCCESSFUL. Unit tests total=77 passed=77 failed=0 skipped=0
 (new: EvidenceFileStoreTest 7, RetentionPlannerTest 4, ObservationDaoTest 6 [Robolectric], SettingsRepositoryTest 2, ObservationRepositoryTest 6 [Robolectric], AppSettingsTest 2).
+
+## Phases 5–6 (2026-10-28)
+Full verify → BUILD SUCCESSFUL. Unit tests total=117 passed=117 failed=0 skipped=0.
+New: DetectionDecoderTest 5, EfficientDetReferenceTest 5 (Python LiteRT reference dump), TurkishPlateParserTest 12,
+PipelineUnitsTest 10, PipelineReplayTest 8 (replay harness: single pass, parked, two cars, ROI, unreadable,
+no plate, disagreement → review, camera jolt pause). On-device inference/benchmarks: not run (no device).

@@ -2,6 +2,7 @@ package com.plakagozcusu.vision.models
 
 import com.google.common.truth.Truth.assertThat
 import com.plakagozcusu.vision.api.DetectionDecoder
+import com.plakagozcusu.vision.api.DetectionTensors
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.float
 import kotlinx.serialization.json.jsonArray
@@ -49,10 +50,12 @@ class EfficientDetReferenceTest {
     fun `decoder produces valid normalized boxes from real model output`() {
         val all =
             DetectionDecoder.decode(
-                tensor("StatefulPartitionedCall:3"),
-                tensor("StatefulPartitionedCall:2"),
-                tensor("StatefulPartitionedCall:1"),
-                count = 25,
+                DetectionTensors(
+                    tensor("StatefulPartitionedCall:3"),
+                    tensor("StatefulPartitionedCall:2"),
+                    tensor("StatefulPartitionedCall:1"),
+                    25,
+                ),
                 minScore = 0f,
                 classMap = (0 until 90).associateWith { com.plakagozcusu.core.model.VehicleClass.UNKNOWN },
             )
@@ -69,10 +72,12 @@ class EfficientDetReferenceTest {
     fun `synthetic image yields no confident vehicle`() {
         val vehicles =
             DetectionDecoder.decode(
-                tensor("StatefulPartitionedCall:3"),
-                tensor("StatefulPartitionedCall:2"),
-                tensor("StatefulPartitionedCall:1"),
-                count = 25,
+                DetectionTensors(
+                    tensor("StatefulPartitionedCall:3"),
+                    tensor("StatefulPartitionedCall:2"),
+                    tensor("StatefulPartitionedCall:1"),
+                    25,
+                ),
                 minScore = 0.5f,
             )
 

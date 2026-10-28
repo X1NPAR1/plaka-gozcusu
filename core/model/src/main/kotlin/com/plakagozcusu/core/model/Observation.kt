@@ -35,6 +35,8 @@ data class Observation(
     val isProtected: Boolean,
     val createdAt: Long,
     val updatedAt: Long,
+    /** Earlier observation with the same confident plate inside the duplicate window (linked, never dropped). */
+    val linkedObservationId: String? = null,
 )
 
 /** A stored evidence file: path relative to the evidence root, its SHA-256 (hex) and size. */

@@ -2,6 +2,7 @@ package com.plakagozcusu.vision.models
 
 import android.content.Context
 import com.plakagozcusu.vision.api.DetectionDecoder
+import com.plakagozcusu.vision.api.DetectionTensors
 import com.plakagozcusu.vision.api.ImageBuffer
 import com.plakagozcusu.vision.api.VehicleDetection
 import com.plakagozcusu.vision.api.VehicleDetector
@@ -40,7 +41,11 @@ class EfficientDetVehicleDetector(
         interpreter.runForMultipleInputsOutputs(arrayOf(input), outputs)
         val flatBoxes = FloatArray(MAX_DET * BOX_COORDS)
         boxes[0].forEachIndexed { i, b -> b.copyInto(flatBoxes, i * BOX_COORDS) }
-        val decoded = DetectionDecoder.decode(flatBoxes, classes[0], scores[0], count[0].toInt(), minScore)
+        val decoded =
+            DetectionDecoder.decode(
+                DetectionTensors(flatBoxes, classes[0], scores[0], count[0].toInt()),
+                minScore,
+            )
         return DetectionDecoder.suppressOverlaps(decoded, CROSS_CLASS_IOU)
     }
 

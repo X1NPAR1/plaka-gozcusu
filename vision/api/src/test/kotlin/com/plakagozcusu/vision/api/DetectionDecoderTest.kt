@@ -11,10 +11,7 @@ class DetectionDecoderTest {
         val boxes = floatArrayOf(0.1f, 0.2f, 0.5f, 0.6f, 0f, 0f, 1f, 1f)
         val result =
             DetectionDecoder.decode(
-                boxes,
-                floatArrayOf(2f, 7f),
-                floatArrayOf(0.9f, 0.8f),
-                count = 2,
+                DetectionTensors(boxes, floatArrayOf(2f, 7f), floatArrayOf(0.9f, 0.8f), 2),
                 minScore = 0.5f,
             )
 
@@ -30,10 +27,7 @@ class DetectionDecoderTest {
         val boxes = FloatArray(12) { if (it % 4 >= 2) 0.5f else 0.1f }
         val result =
             DetectionDecoder.decode(
-                boxes,
-                floatArrayOf(0f, 1f, 2f),
-                floatArrayOf(0.99f, 0.99f, 0.3f),
-                count = 3,
+                DetectionTensors(boxes, floatArrayOf(0f, 1f, 2f), floatArrayOf(0.99f, 0.99f, 0.3f), 3),
                 minScore = 0.5f,
             )
 
@@ -44,10 +38,7 @@ class DetectionDecoderTest {
     fun `count never reads past the arrays and degenerate boxes are skipped`() {
         val result =
             DetectionDecoder.decode(
-                floatArrayOf(0.5f, 0.5f, 0.5f, 0.5f),
-                floatArrayOf(2f),
-                floatArrayOf(0.9f),
-                count = 25,
+                DetectionTensors(floatArrayOf(0.5f, 0.5f, 0.5f, 0.5f), floatArrayOf(2f), floatArrayOf(0.9f), 25),
                 minScore = 0f,
             )
 

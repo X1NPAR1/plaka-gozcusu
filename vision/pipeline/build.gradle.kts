@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
     api(project(":vision:api"))
+    implementation(libs.kotlinx.coroutines.core)
 }

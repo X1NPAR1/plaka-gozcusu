@@ -56,6 +56,7 @@ data class ObservationEntity(
     @ColumnInfo(name = "is_protected") val isProtected: Boolean,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "updated_at") val updatedAt: Long,
+    @ColumnInfo(name = "linked_observation_id") val linkedObservationId: String? = null,
 )
 
 @Entity(tableName = "sessions")
