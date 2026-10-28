@@ -19,6 +19,8 @@ import java.util.zip.ZipOutputStream
 class EvidenceExporter(
     private val resolve: (EvidenceFile) -> File,
     private val appVersion: String,
+    /** Optional derivative with date/time burned in (Android); originals are always exported untouched. */
+    private val stamp: ((File, String) -> ByteArray?)? = null,
 ) {
     data class Result(
         val records: Int,
@@ -34,6 +36,7 @@ class EvidenceExporter(
         var entries: List<ManifestEntry> = emptyList()
         ZipOutputStream(out).use { zip ->
             entries = observations.flatMap { o -> o.evidence().map { (kind, file) -> addEvidence(o.id, kind, file, zip) } }
+            observations.forEach { o -> addStamped(o, zip) }
             zip.putNextEntry(ZipEntry("manifest.json"))
             zip.write(manifestJson(observations, entries, exportedAtMillis).toByteArray())
             zip.closeEntry()
@@ -54,6 +57,17 @@ class EvidenceExporter(
         val src = resolve(file)
         val actual = if (src.isFile) copyHashed(src, name, zip) else null
         return ManifestEntry(observationId, kind, name, file.sha256, actual, actual == file.sha256)
+    }
+
+    private fun addStamped(
+        o: Observation,
+        zip: ZipOutputStream,
+    ) {
+        val scene = o.scene?.let(resolve)?.takeIf { it.isFile } ?: return
+        val bytes = stamp?.invoke(scene, local(o.bestFrameAt, o.zoneId)) ?: return
+        zip.putNextEntry(ZipEntry("kayitlar/${o.id}/sahne_damgali.jpg"))
+        zip.write(bytes)
+        zip.closeEntry()
     }
 
     private fun copyHashed(

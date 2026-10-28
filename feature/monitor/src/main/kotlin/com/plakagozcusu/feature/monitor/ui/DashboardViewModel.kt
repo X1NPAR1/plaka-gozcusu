@@ -3,6 +3,7 @@ package com.plakagozcusu.feature.monitor.ui
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.plakagozcusu.core.camera.CameraController
 import com.plakagozcusu.core.common.TimeSource
 import com.plakagozcusu.core.data.ObservationRepository
 import com.plakagozcusu.core.datastore.SettingsRepository
@@ -41,10 +42,15 @@ class DashboardViewModel
         private val repository: ObservationRepository,
         settings: SettingsRepository,
         time: TimeSource,
+        camera: CameraController,
     ) : ViewModel() {
         val state: StateFlow<MonitoringState> = controller.state
         val overlay: StateFlow<List<TrackView>> = controller.overlay
         val preview = controller.preview
+        val surfaceRequest = camera.surfaceRequest
+
+        fun setPreviewWanted(wanted: Boolean) = controller.setPreviewWanted(wanted)
+
         val showOverlays =
             settings.settings.map { it.showOverlays }.stateIn(
                 viewModelScope,

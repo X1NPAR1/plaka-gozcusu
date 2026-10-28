@@ -34,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
+import com.plakagozcusu.core.designsystem.component.TimeStampOverlay
 import com.plakagozcusu.core.designsystem.theme.PgTheme
 import com.plakagozcusu.feature.records.R
 import java.io.File
@@ -77,6 +78,7 @@ fun ImageViewerDialog(
     file: File,
     title: String,
     onDismiss: () -> Unit,
+    stamp: String? = null,
 ) {
     var scale by remember { mutableFloatStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
@@ -108,6 +110,7 @@ fun ImageViewerDialog(
                         }.transformable(state)
                         .graphicsLayer(scaleX = scale, scaleY = scale, translationX = offset.x, translationY = offset.y),
             )
+            stamp?.let { TimeStampOverlay(it, Modifier.safeDrawingPadding().padding(bottom = PgTheme.spacing.xxl)) }
             Row(
                 Modifier
                     .fillMaxWidth()

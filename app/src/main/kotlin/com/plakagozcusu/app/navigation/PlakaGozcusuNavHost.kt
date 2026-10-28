@@ -6,6 +6,12 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.filled.ManageSearch
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -14,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -24,6 +31,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.plakagozcusu.app.R
+import com.plakagozcusu.core.designsystem.component.PgScreen
 import com.plakagozcusu.core.designsystem.theme.Motion
 import com.plakagozcusu.feature.monitor.ui.DashboardScreen
 import com.plakagozcusu.feature.onboarding.OnboardingScreen
@@ -53,16 +61,15 @@ import kotlinx.serialization.Serializable
 private data class Tab(
     val route: Any,
     val label: Int,
-    val glyph: String,
+    val icon: ImageVector,
 )
 
-// Text glyphs keep the app free of an icon dependency; each tab also has a visible label.
 private val TABS =
     listOf(
-        Tab(DashboardRoute, R.string.tab_home, "◉"),
-        Tab(RecordsRoute, R.string.tab_records, "≡"),
-        Tab(IncidentRoute, R.string.tab_incident, "⌕"),
-        Tab(SettingsRoute, R.string.tab_settings, "⚙"),
+        Tab(DashboardRoute, R.string.tab_home, Icons.Filled.Home),
+        Tab(RecordsRoute, R.string.tab_records, Icons.AutoMirrored.Filled.List),
+        Tab(IncidentRoute, R.string.tab_incident, Icons.AutoMirrored.Filled.ManageSearch),
+        Tab(SettingsRoute, R.string.tab_settings, Icons.Filled.Settings),
     )
 
 const val MODEL_VERSIONS_LABEL = "EfficientDet-Lite0 int8 · ML Kit Text 16.0.1"
@@ -91,7 +98,7 @@ fun PlakaGozcusuNavHost(
                                     restoreState = true
                                 }
                             },
-                            icon = { Text(tab.glyph, style = MaterialTheme.typography.titleLarge) },
+                            icon = { Icon(tab.icon, contentDescription = null) },
                             label = { Text(stringResource(tab.label)) },
                         )
                     }
@@ -144,23 +151,45 @@ private fun AppNavGraph(
             )
         }
         composable<RecordsRoute> {
-            RecordsScreen(
-                onOpen = { nav.navigate(DetailRoute(it)) },
-                appVersion = appVersion,
-            )
+            PgScreen(
+                title = stringResource(R.string.tab_records),
+            ) { inner ->
+                RecordsScreen(
+                    modifier = inner,
+                    onOpen = { nav.navigate(DetailRoute(it)) },
+                    appVersion = appVersion,
+                )
+            }
         }
         composable<IncidentRoute> {
-            IncidentScreen(
-                onOpen = { nav.navigate(DetailRoute(it)) },
-                appVersion = appVersion,
-            )
+            PgScreen(
+                title = stringResource(R.string.tab_incident),
+            ) { inner ->
+                IncidentScreen(
+                    modifier = inner,
+                    onOpen = { nav.navigate(DetailRoute(it)) },
+                    appVersion = appVersion,
+                )
+            }
         }
         composable<SettingsRoute> {
-            SettingsScreen(onRecalibrate = {
-                navVm.releaseCameraForCalibration()
-                nav.navigate(CalibrationRoute)
-            }, appVersion = appVersion, modelVersions = MODEL_VERSIONS_LABEL)
+            PgScreen(
+                title = stringResource(R.string.tab_settings),
+            ) { inner ->
+                SettingsScreen(modifier = inner, onRecalibrate = {
+                    navVm.releaseCameraForCalibration()
+                    nav.navigate(CalibrationRoute)
+                }, appVersion = appVersion, modelVersions = MODEL_VERSIONS_LABEL)
+            }
         }
-        composable<DetailRoute> { DetailScreen(onDeleted = { nav.popBackStack() }, appVersion = appVersion) }
+        composable<DetailRoute> {
+            PgScreen(
+                title = stringResource(R.string.detail_title),
+                onBack = { nav.popBackStack() },
+                backDescription = stringResource(R.string.back),
+            ) { inner ->
+                DetailScreen(modifier = inner, onDeleted = { nav.popBackStack() }, appVersion = appVersion)
+            }
+        }
     }
 }

@@ -5,6 +5,7 @@ import android.os.Build
 import android.text.format.Formatter
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.compose.CameraXViewfinder
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,6 +34,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -166,6 +168,12 @@ private fun StatusLine(state: MonitoringState) {
 @Composable
 private fun LiveView(viewModel: DashboardViewModel) {
     val frame by viewModel.preview.collectAsStateWithLifecycle()
+    val request by viewModel.surfaceRequest.collectAsStateWithLifecycle()
+    // Ask the service for a real (smooth) preview only while this view is on screen.
+    DisposableEffect(Unit) {
+        viewModel.setPreviewWanted(true)
+        onDispose { viewModel.setPreviewWanted(false) }
+    }
     val tracks by viewModel.overlay.collectAsStateWithLifecycle()
     val show by viewModel.showOverlays.collectAsStateWithLifecycle()
     val live = PgTheme.status.live
@@ -179,13 +187,19 @@ private fun LiveView(viewModel: DashboardViewModel) {
             .background(Color.Black)
             .semantics { contentDescription = description },
     ) {
-        frame?.let {
-            Image(
-                bitmap = it.asImageBitmap(),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize(),
-            )
+        val liveRequest = request
+        if (liveRequest != null) {
+            // Real CameraX preview: smooth, full frame rate (bound only while this view is visible).
+            CameraXViewfinder(surfaceRequest = liveRequest, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Fit)
+        } else {
+            frame?.let {
+                Image(
+                    bitmap = it.asImageBitmap(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
         }
         if (show) {
             Canvas(Modifier.fillMaxSize()) {

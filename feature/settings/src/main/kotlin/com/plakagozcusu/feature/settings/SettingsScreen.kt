@@ -55,11 +55,6 @@ fun SettingsScreen(
         modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(PgTheme.spacing.lg),
         verticalArrangement = Arrangement.spacedBy(PgTheme.spacing.md),
     ) {
-        Text(
-            stringResource(R.string.settings_title),
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.semantics { heading() },
-        )
         LoadCard(settings, viewModel)
         StorageCard(settings, viewModel)
         AiCard(settings, viewModel)

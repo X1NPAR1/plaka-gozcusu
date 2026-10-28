@@ -73,6 +73,13 @@ class FakeCameraController(
         _state.update { if (it is CameraState.Ready) it.copy(focusLocked = lock) else it }
     }
 
+    var targetRotation: Int = 0
+        private set
+
+    override fun setTargetRotation(rotation: Int) {
+        targetRotation = rotation
+    }
+
     override fun cancelFocusLock() = _state.update { if (it is CameraState.Ready) it.copy(focusLocked = false) else it }
 
     override fun setExposureCompensationIndex(index: Int) =

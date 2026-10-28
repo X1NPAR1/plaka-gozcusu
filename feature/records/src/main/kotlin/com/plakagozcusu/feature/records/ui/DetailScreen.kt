@@ -40,6 +40,7 @@ import com.plakagozcusu.core.designsystem.component.PgCard
 import com.plakagozcusu.core.designsystem.component.PgSecondaryButton
 import com.plakagozcusu.core.designsystem.component.PgTextButton
 import com.plakagozcusu.core.designsystem.component.StatusBadge
+import com.plakagozcusu.core.designsystem.component.TimeStampOverlay
 import com.plakagozcusu.core.designsystem.theme.PgTheme
 import com.plakagozcusu.core.designsystem.theme.PlateTextStyle
 import com.plakagozcusu.core.model.EvidenceFile
@@ -86,7 +87,8 @@ fun DetailScreen(
         ExportStatus(export, viewModel::consumeExport)
         ActionRows(observation, viewModel, onDialog = { dialog = it }, onExport = { exportLauncher.launch(exportFileName()) })
     }
-    viewing?.let { (file, title) -> ImageViewerDialog(file, title, onDismiss = { viewing = null }) }
+    val stamp = formatFull(observation.bestFrameAt, observation.zoneId)
+    viewing?.let { (file, title) -> ImageViewerDialog(file, title, onDismiss = { viewing = null }, stamp = stamp) }
     when (dialog) {
         // Nothing to show.
         Dialog.NONE -> {}
@@ -157,6 +159,7 @@ private fun CropImage(
     resolve: (EvidenceFile) -> java.io.File,
     description: String,
     modifier: Modifier = Modifier,
+    stamp: String? = null,
     onClick: () -> Unit,
 ) {
     Column(modifier.clickable(onClickLabel = stringResource(R.string.viewer_open), onClick = onClick)) {
@@ -170,6 +173,7 @@ private fun CropImage(
                 .background(MaterialTheme.colorScheme.surfaceVariant),
         ) {
             EvidenceImage(file, resolve, description, ContentScale.Fit) { this }
+            stamp?.let { TimeStampOverlay(it) }
         }
     }
 }
@@ -261,7 +265,13 @@ private fun EvidenceGallery(
     val sceneTitle = stringResource(R.string.detail_scene)
     val vehicleTitle = stringResource(R.string.detail_vehicle)
     val plateTitle = stringResource(R.string.detail_plate)
-    CropImage(observation.scene, resolve, sceneTitle, onClick = { open(observation.scene, sceneTitle) })
+    CropImage(
+        observation.scene,
+        resolve,
+        sceneTitle,
+        stamp = formatFull(observation.bestFrameAt, observation.zoneId),
+        onClick = { open(observation.scene, sceneTitle) },
+    )
     Row(horizontalArrangement = Arrangement.spacedBy(PgTheme.spacing.sm)) {
         CropImage(
             observation.vehicleCrop,

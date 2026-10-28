@@ -66,6 +66,7 @@ class CameraXController
         private var camera: Camera? = null
         private var imageCapture: ImageCapture? = null
         private var imageAnalysis: ImageAnalysis? = null
+        private var preview: Preview? = null
 
         // Incremented by every bind/unbind; a bind that resumes after a newer call is stale and must
         // not touch the camera (fixes unbind-before-bind races on fast navigation). Main thread only.
@@ -116,6 +117,7 @@ class CameraXController
                     }
 
             camera = bound
+            this.preview = preview
             imageCapture = capture
             imageAnalysis = analysis
             observeCameraState(owner, bound)
@@ -260,7 +262,14 @@ class CameraXController
             camera = null
             imageCapture = null
             imageAnalysis = null
+            preview = null
             _surfaceRequest.value = null
+        }
+
+        override fun setTargetRotation(rotation: Int) {
+            imageAnalysis?.targetRotation = rotation
+            imageCapture?.targetRotation = rotation
+            preview?.targetRotation = rotation
         }
 
         override fun setZoomRatio(ratio: Float) {

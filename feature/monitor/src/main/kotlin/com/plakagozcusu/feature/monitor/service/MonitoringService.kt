@@ -46,6 +46,7 @@ import com.plakagozcusu.vision.pipeline.TrackOutcome
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -141,7 +142,8 @@ class MonitoringService : LifecycleService() {
         val ctx = SessionContext(sessionId, anchor, linker, settings) { result -> onFrameResult(result) }
         context = ctx
         val analyzer = SessionAnalyzer(built, scheduler, watchdog, ctx.handler)
-        if (camera.bind(this, CameraConfig(withPreview = false), analyzer) is AppResult.Failure) {
+        currentAnalyzer = analyzer
+        if (sessionCamera.bind(this, analyzer) is AppResult.Failure) {
             fail(AppError.CameraUnavailable())
             return
         }
@@ -158,6 +160,7 @@ class MonitoringService : LifecycleService() {
                 if (level == ThermalLevel.CRITICAL) notifications.warn(R.string.pause_overheating)
             }.also { it.start() }
         observeCamera()
+        sessionCamera.observe(lifecycleScope, this, { currentAnalyzer }) { applyCalibration(settings) }
         superviseLoop(watchdog, settings)
     }
 
@@ -198,6 +201,10 @@ class MonitoringService : LifecycleService() {
         if (c.focusLocked) camera.focusAt(PointF(c.focusX, c.focusY), lock = true)
     }
 
+    private var currentAnalyzer: com.plakagozcusu.core.camera.FrameAnalyzer? = null
+
+    private val sessionCamera by lazy { SessionCamera(this, camera, controller) }
+
     private fun observeCamera() {
         lifecycleScope.launch {
             camera.state.collect { s ->
@@ -236,11 +243,9 @@ class MonitoringService : LifecycleService() {
         val engine = engine ?: return
         val handler = context?.handler ?: return
         camera.unbind()
-        camera.bind(
-            this,
-            CameraConfig(withPreview = false),
-            SessionAnalyzer(engine, FrameScheduler(settings.analysisLoad), watchdog, handler),
-        )
+        val analyzer = SessionAnalyzer(engine, FrameScheduler(settings.analysisLoad), watchdog, handler)
+        currentAnalyzer = analyzer
+        sessionCamera.bind(this, analyzer)
         applyCalibration(settings)
     }
 
@@ -320,6 +325,8 @@ class MonitoringService : LifecycleService() {
         val running = controller.state.value
         thermal?.stop()
         thermal = null
+        sessionCamera.stopObserving()
+        currentAnalyzer = null
         wakeLock.release()
         controller.publishPreview(null)
         camera.unbind()

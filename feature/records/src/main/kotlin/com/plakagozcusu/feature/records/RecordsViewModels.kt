@@ -60,7 +60,11 @@ class RecordActions
             withContext(dispatchers.io) {
                 runCatching {
                     resolver.openOutputStream(target)?.use { out ->
-                        EvidenceExporter(repository::resolveFile, appVersion).export(observations, time.now().toEpochMilli(), out)
+                        EvidenceExporter(
+                            repository::resolveFile,
+                            appVersion,
+                            StampedCopy::render,
+                        ).export(observations, time.now().toEpochMilli(), out)
                     } ?: error("no output stream")
                 }.fold({ ExportState.Done(it.records, it.integrityFailures) }, { ExportState.Failed })
             }

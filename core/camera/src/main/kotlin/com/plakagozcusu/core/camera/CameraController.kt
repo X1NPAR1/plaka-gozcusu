@@ -31,6 +31,9 @@ interface CameraController {
 
     fun setZoomRatio(ratio: Float)
 
+    /** Display rotation (Surface.ROTATION_*): stills and analysis frames follow how the phone is held. */
+    fun setTargetRotation(rotation: Int)
+
     /**
      * Focus + meter at [scenePoint] (normalized upright coordinates). With [lock] the AF/AE stays
      * at that point instead of auto-cancelling, which keeps the road in focus at night.

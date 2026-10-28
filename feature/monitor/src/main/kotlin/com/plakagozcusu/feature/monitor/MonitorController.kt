@@ -44,6 +44,14 @@ class MonitorController
         private val _preview = MutableStateFlow<Bitmap?>(null)
         val preview: StateFlow<Bitmap?> = _preview.asStateFlow()
 
+        /** True while the dashboard live view is on screen: the service then binds a real Preview. */
+        private val _previewWanted = MutableStateFlow(false)
+        val previewWanted: StateFlow<Boolean> = _previewWanted.asStateFlow()
+
+        fun setPreviewWanted(wanted: Boolean) {
+            _previewWanted.value = wanted
+        }
+
         internal fun publishPreview(bitmap: Bitmap?) {
             _preview.value = bitmap
         }

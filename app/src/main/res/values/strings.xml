@@ -5,4 +5,6 @@
     <string name="tab_records">Kayıtlar</string>
     <string name="tab_incident">Olay Bul</string>
     <string name="tab_settings">Ayarlar</string>
+    <string name="back">Geri</string>
+    <string name="detail_title">Kayıt detayı</string>
 </resources>
