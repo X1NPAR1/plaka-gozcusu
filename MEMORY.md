@@ -85,3 +85,13 @@ Catalog source: https://www.aitmpl.com/components.json (1,900+ components, filte
   losing the keystore means updates can't be installed over this build.
 - Release APK copy: F:\DevCacheelease\PlakaGozcusu-0.1.0-release.apk
 - Next when user reports: fix device issues, measure latency/thermal, tune defaults, Baseline Profiles, per-ABI splits.
+
+## User report 2026-10-28 (after 0.1.1): "kamera kasıyor" + plate "TR 34 ABC 123" not read
+- DONE (2b29e4a): parser skips merged "TR"/noise prefix. Not released yet (next: 0.1.2).
+- Root cause of no-read in user's test: plate shown to the camera is STATIONARY → pipeline only OCRs
+  CONFIRMED+MOVING+in-ROI tracks (by design, parked cars). Also a close-up rear may not be detected as a car.
+- NEXT (in order): (1) calibration "Test fotoğrafı çek" also runs PlateReader on the still and shows the
+  parsed result (bind MlKitPlateReader as PlateReader via Hilt in :app; decode JPEG → ImageBuffer);
+  (2) lag: analysis target 960x720, encode scene JPEG only at finalize, preview: bind real CameraX Preview
+  while dashboard visible (service rebinds with/without preview), keep analysis-only when UI gone;
+  (3) build+release 0.1.2 (versionCode 3), check usage-guard before each step.
