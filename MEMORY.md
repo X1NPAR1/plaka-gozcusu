@@ -120,3 +120,6 @@ Catalog source: https://www.aitmpl.com/components.json (1,900+ components, filte
 8. Plate reading/zoom/review UX (user, 2026-10-28): auto-zoom ROI crop around the vehicle/plate region from the
    full-res still (not digital camera zoom); plate crop viewer with pinch-zoom + contrast toggle; side-by-side
    frames of the pass for manual review; review queue screen for NEEDS_REVIEW with one-tap confirm/correct.
+9. Detail screen (user, 2026-10-28): tapping the scene, vehicle or plate image opens an in-app full-screen
+   popup viewer (Dialog, black background, pinch-zoom/pan, double-tap zoom, close button + back), not an
+   external app.
